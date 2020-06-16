@@ -2,7 +2,7 @@ const axios = require('axios')
 const {authenticate} = require('../utils/spotifyAuth')
 
 module.exports = {
-    getPlaylists: async (req, res) => {
+    getPlaylist: async (req, res) => {
         //get specified playlists and return playlist name and album art
         const {playlistId} = req.body
         const accessToken = await authenticate()

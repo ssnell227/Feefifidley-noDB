@@ -2,7 +2,7 @@ create table game (
     game_id serial primary key,
     playlist varchar(100),
     score int,
-    songList text
+    song_list text
 );
 
 create table users (

@@ -47,10 +47,19 @@ app.post('/api/auth/login', authCtrl.login)
 
 app.post('/api/auth/logout', authCtrl.logout)
 
+//game endpoints
+
+app.post('/api/game/newGame', gameCtrl.newGame)
+
+app.put('/api/game/updateGame', gameCtrl.updateGame)
+
+app.get('/api/game/getUserHighScores', gameCtrl.getUserHighScores)
+
+app.delete('/api/games/deleteGame', gameCtrl.deleteGame)
 
 //spotify endpoints
 
-app.post('/api/spotify/getPlaylists', spotifyCtrl.getPlaylists)
+app.post('/api/spotify/getPlaylist', spotifyCtrl.getPlaylist)
 
 app.post('/api/spotify/getPlaylistItems', spotifyCtrl.getPlaylistItems)
 
