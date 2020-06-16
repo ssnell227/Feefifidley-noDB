@@ -2,14 +2,16 @@ require('dotenv').config()
 
 const express = require('express'),
     massive = require('massive'),
-    session = require('express-session')
+    session = require('express-session'),
+    axios = require('axios')
 
-const authCtrl = require('./authControl'),
-    gameCtrl = require('./gameControl'),
-    spotifyCtrl = require('./spotifyControl'),
-    { SERVER_PORT, CONNECTION_STRING, SESSION_SECRET } = process.env
+const authCtrl = require('./controllers/authControl'),
+    gameCtrl = require('./controllers/gameControl'),
+    spotifyCtrl = require('./controllers/spotifyControl'),
+    { SERVER_PORT, CONNECTION_STRING, SESSION_SECRET} = process.env
 
 const app = express()
+
 
 app.use(express.json())
 app.use(session({
@@ -35,11 +37,20 @@ massive({
 
 app.listen(SERVER_PORT, () => console.log(`Listening on ${SERVER_PORT}`))
 
+
+
 //auth endpoints
 
 app.post('/api/auth/register', authCtrl.register)
 
 app.post('/api/auth/login', authCtrl.login)
 
-app.delete('/api/auth/logout', authCtrl.logout)
+app.post('/api/auth/logout', authCtrl.logout)
+
+
+//spotify endpoints
+
+app.post('/api/spotify/getPlaylists', spotifyCtrl.getPlaylists)
+
+app.post('/api/spotify/getPlaylistItems', spotifyCtrl.getPlaylistItems)
 
