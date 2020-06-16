@@ -16,12 +16,29 @@ module.exports = {
 
         const newUser = await db.users.insert({username, hash})
 
+        delete newUser.hash
         req.session.user = newUser
-        delete req.session.user.hash
         res.status(201).send(req.session.user)
     },
     login: async (req, res) => {
-        
+        const db = req.app.get('db')
+        const {username, password} = req.body
+
+        const [user] = await db.users.find({username})
+
+        if (!user) {
+            return res.status(400).send('Username not found')
+        }
+
+        const authenticated = bcrypt.compareSync(password, user.hash)
+
+        if (!authenticated) {
+            return res.status(400).send('Incorrect password')
+        }
+
+        delete user.hash
+        req.session.user = user
+        res.status(201).send(req.session.user)
     },
     logout: async (req, res) => {
         
