@@ -53,9 +53,9 @@ app.post('/api/game/newGame', gameCtrl.newGame)
 
 app.put('/api/game/updateGame', gameCtrl.updateGame)
 
-app.get('/api/game/getUserHighScores', gameCtrl.getUserHighScores)
+app.get('/api/game/getUserHighScores/:userId', gameCtrl.getUserHighScores)
 
-app.delete('/api/games/deleteGame', gameCtrl.deleteGame)
+app.delete('/api/game/deleteGame', gameCtrl.deleteGame)
 
 //spotify endpoints
 
