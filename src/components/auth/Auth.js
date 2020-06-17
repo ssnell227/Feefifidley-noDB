@@ -8,17 +8,30 @@ const Auth = (props) => {
     const [password, setPassword] = useState('')
 
     const login = async (e) => {
-        //is it that i'm using async await syntax?
-        console.log('firing')
         e.preventDefault()
         if (username && password) {
-            console.log('firing')
             const user = await axios.post('/api/auth/login', { username, password })
                 .catch(err => console.log('Somethings gone wrong:', err))
 
             const { user_id } = user.data
-            
+
             props.setUser(username, user_id)
+
+            props.history.push('/dashboard')
+        }
+    }
+
+    const register = async (e) => {
+        e.preventDefault()
+        if (username && password) {
+            const newUser = await axios.post('/api/auth/register', { username, password })
+                .catch(err => console.log('Somethings gone wrong:', err))
+            
+            const { user_id } = newUser.data
+
+            props.setUser(username, user_id)
+
+            props.history.push('/dashboard')
         }
     }
 
@@ -30,7 +43,7 @@ const Auth = (props) => {
                     <label>Username: <input onChange={(e) => setUsername(e.target.value)} /></label>
                     <label>Password: <input type='password' onChange={(e) => setPassword(e.target.value)} /></label>
                     <input onClick={login} type='submit' value='Log In' />
-                    <button>Register</button>
+                    <button onClick={register}>Register</button>
                 </form>
             </div>
         </div>

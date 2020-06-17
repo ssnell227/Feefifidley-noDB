@@ -1,7 +1,8 @@
 
 const initialState = {
-    username: '',
-    userId: null
+    //default names for dev
+    username: 'Stephen',
+    userId: 1000
 }
 
 const SET_USER = 'SET_USER'
