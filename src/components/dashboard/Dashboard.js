@@ -21,7 +21,7 @@ const Dashboard = (props) => {
             playlistName: name,
             playlistId: id
         })
-        const game = await axios.post('/api/game/newGame')
+        const game = await axios.post('/api/game/newGame', {userId: props.auth.userId, playlist: name})
         const {game_id} = game.data
         props.history.push(`/game/${game_id}`)
     }

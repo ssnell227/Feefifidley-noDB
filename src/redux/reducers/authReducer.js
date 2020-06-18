@@ -1,8 +1,8 @@
 
 const initialState = {
     //default names for dev
-    username: 'Stephen',
-    userId: 1000
+    username: 'firstUser',
+    userId: 1
 }
 
 const SET_USER = 'SET_USER'
