@@ -3,7 +3,8 @@ require('dotenv').config()
 const express = require('express'),
     massive = require('massive'),
     session = require('express-session'),
-    axios = require('axios')
+    axios = require('axios'),
+    cors = require('cors')
 
 const authCtrl = require('./controllers/authControl'),
     gameCtrl = require('./controllers/gameControl'),
@@ -14,6 +15,7 @@ const app = express()
 
 
 app.use(express.json())
+app.use(cors())
 app.use(session({
     resave: false,
     saveUninitialized: true,

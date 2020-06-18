@@ -12,12 +12,13 @@ const Auth = (props) => {
         if (username && password) {
             const user = await axios.post('/api/auth/login', { username, password })
                 .catch(err => console.log('Somethings gone wrong:', err))
+            if (user) {
+                const { user_id } = user.data
 
-            const { user_id } = user.data
+                props.setUser(username, user_id)
 
-            props.setUser(username, user_id)
-
-            props.history.push('/dashboard')
+                props.history.push('/dashboard')
+            }
         }
     }
 
@@ -26,7 +27,7 @@ const Auth = (props) => {
         if (username && password) {
             const newUser = await axios.post('/api/auth/register', { username, password })
                 .catch(err => console.log('Somethings gone wrong:', err))
-            
+
             const { user_id } = newUser.data
 
             props.setUser(username, user_id)

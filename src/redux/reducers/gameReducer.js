@@ -14,18 +14,22 @@ const _FULFILLED = '_FULFILLED'
 const _REJECTED = '_REJECTED'
 
 export const getPlaylists = (playlistIds) => {
-    //who knows whether this'll work
-    let playlists
+    //axios get request is being sent to 3000 instead of 4000
+    let playlists = []
     const playlistCalls = []
-    playlistIds.forEach(id => {
-       playlistCalls.push(axios.get('/api/spotify/getPlaylist', {id}))
+    playlistIds.forEach(playlistId => {
+       playlistCalls.push(axios.post('http://localhost:4000/api/spotify/getPlaylist', {playlistId}))
     })
-    Promise.all(playlistCalls)
+    // Promise.all(playlistCalls)
+    // .then(res => {
+    //     console.log(res)
+    //     res.forEach(item => playlists.push(item.data))
+    //     console.log(playlists)
+    // })
     
-
     return {
         type: GET_PLAYLISTS,
-        payload: { playlists }
+        payload: { playlists: Promise.all(playlistCalls) }
     }
 }
 
