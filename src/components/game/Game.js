@@ -1,11 +1,24 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
+import {connect} from 'react-redux'
+import axios from 'axios'
 
 const Game = (props) => {
-    return (
-        <div>
+    const [playlistItems, setPlaylistItems] = useState([])
 
+    const getPlaylistItems = async () => await axios.post('/api/spotify/getPlaylistItems', {playlistId: props.game.currentPlaylist.playlistId})
+
+    useEffect(() => {
+        getPlaylistItems().then(res => setPlaylistItems(res.data))
+    }, [])
+    return (
+        <div className='game-outer-container'>
+            <div className='game-inner-container'>
+
+            </div>
         </div>
     )
 }
 
-export default Game
+const mapStateToProps = (reduxState) => reduxState
+
+export default connect(mapStateToProps)(Game)

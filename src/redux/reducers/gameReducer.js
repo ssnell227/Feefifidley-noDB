@@ -2,46 +2,26 @@ import axios from 'axios'
 
 const initialState = {
     //hardcoded playlist ids for now
-    playlistIds: ["37i9dQZF1DX4o1oenSJRJd", '37i9dQZF1DX4UtSsGT1Sbe'],
-    playlists: [],
+    playlistIds: ["37i9dQZF1DX5Ejj0EkURtP", "37i9dQZF1DX4o1oenSJRJd", '37i9dQZF1DXbTxeAdrVG2l', '37i9dQZF1DX4UtSsGT1Sbe', '37i9dQZF1DWTJ7xPn4vNaz', '37i9dQZF1DXaKIA8E7WcJj'],
+    currentPlaylist: {},
     highScores: [],
     loading: false
 }
 
-const GET_PLAYLISTS = 'GET_PLAYLISTS'
-const _PENDING = '_PENDING'
-const _FULFILLED = '_FULFILLED'
-const _REJECTED = '_REJECTED'
+const SET_CURRENT_PLAYLIST = 'SET_CURRENT_PLAYLIST'
 
-export const getPlaylists = (playlistIds) => {
-    //axios get request is being sent to 3000 instead of 4000
-    let playlists = []
-    const playlistCalls = []
-    playlistIds.forEach(playlistId => {
-       playlistCalls.push(axios.post('http://localhost:4000/api/spotify/getPlaylist', {playlistId}))
-    })
-    // Promise.all(playlistCalls)
-    // .then(res => {
-    //     console.log(res)
-    //     res.forEach(item => playlists.push(item.data))
-    //     console.log(playlists)
-    // })
-    
+export const setCurrentPlaylist = (currentPlaylist) => {
+    console.log(currentPlaylist)
     return {
-        type: GET_PLAYLISTS,
-        payload: { playlists: Promise.all(playlistCalls) }
+        type: SET_CURRENT_PLAYLIST,
+        payload: currentPlaylist
     }
 }
 
 export default function reducer (state = initialState, action) {
     switch (action.type) {
-        case GET_PLAYLISTS + _PENDING:
-            return {...state, loading: true}
-        case GET_PLAYLISTS + _FULFILLED:
-            const {playlists} = action.payload
-            return {...state, loading: false, playlists}
-        case GET_PLAYLISTS + _REJECTED:
-            return {...state, loading: false}
+        case SET_CURRENT_PLAYLIST:
+            return {...state, currentPlaylist: action.payload}
         default:
             return state
     }
