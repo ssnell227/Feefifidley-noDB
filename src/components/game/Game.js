@@ -11,28 +11,61 @@ const Game = (props) => {
     const [playing, setPlaying] = useState(false)
     const [currentSong, setCurrentSong] = useState('')
     const [songsPlayed, setSongsPlayed] = useState([])
+    const [input, setInput] = useState('')
+    const [timerStart, setTimerStart] = useState('')
+    const [score, setScore] = useState(0)
 
     const getPlaylistItems = async () => await axios.post('/api/spotify/getPlaylistItems', { playlistId: props.game.currentPlaylist.playlistId })
 
-    const playingTimerCallback = () => {
-        songsPlayed.length < 5 ? setPlaying(!playing) : setGamestate('post')
+    const gameEnd = async () => {
+        setGamestate('post')
+        const songsPlayedString = songsPlayed.map(item => `${item.name} | ${item.artist}`).join(',')
+        await axios.put('/api/game/updateGame', {
+            gameId: props.match.params.gameId,
+            score,
+            songList: songsPlayedString
+        })
+        .catch(err => console.log(err))
     }
+
+    const playingTimerCallback = () => {
+        songsPlayed.length < 5 ? setPlaying(!playing) : gameEnd()
+    }
+
 
     const restart = () => {
         setPlaying(false)
         setGamestate('game')
         setSongsPlayed([])
+        setInput('')
+        setScore(0)
+    }
+
+    const checkInput = (e) => {
+        setInput(e.target.value)
+        const simplifyTrackName = () => {
+            return currentSong.name.includes(' - ') ? currentSong.name.slice(0, currentSong.name.indexOf(' - ')).toLowerCase() : currentSong.name.toLowerCase()
+        }
+        const simpleTrackName = simplifyTrackName()
+
+        if (input === simpleTrackName.slice(0, simpleTrackName.length - 1)) {
+            songsPlayed.length < 5 ? setPlaying(!playing) : setGamestate('post')
+            setScore(score + 1)
+        }
     }
 
     const getSong = () => {
-        //currently broken
         const withPreview = playlistItems.filter(item => item.track.preview_url)
-        const randomIndex = Math.floor(Math.random()) * withPreview.length -1
-        const audioUrl = withPreview[randomIndex].track.preview_url
-        setCurrentSong(withPreview[randomIndex].track.name)
-        return (
-            <audio autoPlay src={audioUrl}/>
-        )
+        const randomIndex = Math.floor(Math.random() * (withPreview.length - 1))
+        const currentSong = {
+            name: withPreview[randomIndex].track.name,
+            artist: withPreview[randomIndex].track.artists[0].name,
+            url: withPreview[randomIndex].track.preview_url
+        }
+
+        setCurrentSong(currentSong)
+        setSongsPlayed([...songsPlayed, currentSong])
+        setTimerStart(Date.now())
     }
 
     useEffect(() => {
@@ -54,19 +87,26 @@ const Game = (props) => {
                 {gameState === 'game' && playing === false &&
                     <div>
                         <Countdown onComplete={() => setPlaying(!playing)} date={Date.now() + 5000} />
+                        
+                            <p>{currentSong.name}</p>
+                            <p>{currentSong.artist}</p>
+                        
                     </div>}
                 {gameState === 'game' && playing === true &&
                     <div>
-                        <Countdown onMount={() => setSongsPlayed(...songsPlayed, currentSong)} onComplete={playingTimerCallback} date={Date.now() + 10000} />
-                        {getSong()}
+                        <Countdown onMount={() => getSong()} onComplete={playingTimerCallback} date={timerStart + 10000} />
+                        <audio autoPlay src={currentSong.url} />
+                        <input autoFocus onChange={(e) => checkInput(e)} />
                     </div>}
                 {gameState === 'post' &&
                     <div>
-                        <p>Finished</p>
-                        <button onClick={()=> restart()}>Play again?</button>
+                        <p>{songsPlayed[songsPlayed.length -1].name}</p>
+                        <p>{songsPlayed[songsPlayed.length -1].artist}</p>
+                        <p>{score} / 5</p>
+                        <button onClick={() => restart()}>Play again?</button>
                     </div>
                 }
-                
+
             </div>
         </div>
     )

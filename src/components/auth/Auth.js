@@ -43,8 +43,10 @@ const Auth = (props) => {
                 <form className='auth-form'>
                     <label>Username: <input onChange={(e) => setUsername(e.target.value)} /></label>
                     <label>Password: <input type='password' onChange={(e) => setPassword(e.target.value)} /></label>
-                    <input onClick={login} type='submit' value='Log In' />
-                    <button onClick={register}>Register</button>
+                    <div className='auth-buttons'>
+                        <input onClick={login} type='submit' value='Log In' />
+                        <button onClick={register}>Register</button>
+                    </div>
                 </form>
             </div>
         </div>

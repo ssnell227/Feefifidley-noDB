@@ -2,8 +2,9 @@ import React from 'react';
 import Routes from './routes'
 import {withRouter} from 'react-router-dom'
 import Nav from './components/nav/Nav'
+import './sass/App.scss'
 
-import './App.css';
+
 
 function App(props) {
   return (

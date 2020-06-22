@@ -1,8 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import axios from 'axios'
-import {setUser} from '../../redux/reducers/authReducer'
-import {withRouter} from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
+import { setUser } from '../../redux/reducers/authReducer'
+import {setCurrentRoom, setCurrentPlaylist} from '../../redux/reducers/gameReducer'
 
 const Nav = (props) => {
 
@@ -10,18 +11,19 @@ const Nav = (props) => {
         await axios.post('/api/auth/logout')
             .catch(err => console.log(err))
         props.setUser('', null)
+        props.setCurrentPlaylist({})
+        props.setCurrentRoom('')
         props.history.push('/')
     }
 
     return (
         <div className='nav-outer-container'>
             <div className='nav-inner-container'>
-                <div className='nav-user-info'>
-                    <p>{props.username}</p>
+                <img className='nav-logo' src='' alt='logo'/>
+                <div className='nav-buttons-container'>
+                    <button onClick={() => props.history.push('/dashboard')}>Dashboard</button>
+                    <button onClick={logout}>Log out</button>
                 </div>
-                <button onClick={() => props.history.push('/dashboard')}>Dashboard</button>
-                <button onClick={logout}>Log out</button>
-
             </div>
         </div>
     )
@@ -29,4 +31,6 @@ const Nav = (props) => {
 
 const mapStateToProps = reduxState => reduxState
 
-export default connect(mapStateToProps, {setUser})(withRouter(Nav))
+const mapDispatchToProps = {setUser, setCurrentRoom, setCurrentPlaylist}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Nav))

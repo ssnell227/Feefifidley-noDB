@@ -4,7 +4,8 @@ const express = require('express'),
     massive = require('massive'),
     session = require('express-session'),
     axios = require('axios'),
-    cors = require('cors')
+    cors = require('cors'),
+    http = require('http')
 
 const authCtrl = require('./controllers/authControl'),
     gameCtrl = require('./controllers/gameControl'),
@@ -12,7 +13,9 @@ const authCtrl = require('./controllers/authControl'),
     { SERVER_PORT, CONNECTION_STRING, SESSION_SECRET} = process.env
 
 const app = express()
-
+const server = http.createServer(app)
+const io = require('socket.io')(server)
+require('./sockets')(io)
 
 app.use(express.json())
 app.use(cors())
@@ -37,7 +40,9 @@ massive({
         process.end()
     })
 
-app.listen(SERVER_PORT, () => console.log(`Listening on ${SERVER_PORT}`))
+server.listen(SERVER_PORT, () => console.log(`Listening on ${SERVER_PORT}`))
+
+
 
 
 

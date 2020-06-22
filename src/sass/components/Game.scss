@@ -1,0 +1,8 @@
+.game-outer-container {
+    @include outer-container;
+}
+
+.game-inner-container {
+    @include centered;
+    height: 90%;
+}

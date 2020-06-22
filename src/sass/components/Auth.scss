@@ -1,0 +1,17 @@
+@import '../mixins';
+
+.auth-outer-container {
+    @include outer-container;
+}
+
+.auth-inner-container {
+    @include centered;
+    width: 400px;
+    height: 600px;
+    text-align: center;
+}
+
+.auth-form {
+    @include flex(column);
+    height: 30%;
+}
