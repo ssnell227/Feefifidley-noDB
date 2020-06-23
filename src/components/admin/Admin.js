@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import axios from 'axios'
+import {setPlaylists} from '../../redux/reducers/gameReducer'
 
 const Admin = (props) => {
     const [searchInput, setSearchInput] = useState('')
-    const [playlists, setPlaylists] = useState([])
     const [searchPlaylists, setSearchPlaylists] = useState([])
     const [rerenderSwitch, setRerenderSwitch] = useState(true)
-
-
-
-    const getPlaylists = async () => {
-        const playlists = await axios.get('/api/playlists')
-        setPlaylists(await playlists.data)
-    }
 
     const removePlaylist = async (playlistId) => {
         await axios.delete(`/api/playlists/${playlistId}`)
@@ -36,11 +29,11 @@ const Admin = (props) => {
     }
 
     useEffect(() => {
-        getPlaylists()
+        props.setPlaylists()
     }, [rerenderSwitch])
 
 
-    const playlistMap = playlists.map(item => <div className='playlist-card' key={item.id}>
+    const playlistMap = props.game.playlists.map(item => <div className='playlist-card' key={item.id}>
         <img data-name={item.playlist_name} data-id={item.id} src={item.img_url} alt='playlist' />
         <p>{item.playlist_name}</p>
         <button onClick={() => removePlaylist(item.id)}>Delete</button>
@@ -68,4 +61,4 @@ const Admin = (props) => {
 
 const mapStateToProps = (reduxState) => reduxState
 
-export default connect(mapStateToProps)(Admin)
+export default connect(mapStateToProps, {setPlaylists})(Admin)

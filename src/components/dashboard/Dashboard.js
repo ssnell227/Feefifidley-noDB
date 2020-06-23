@@ -1,21 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { connect} from 'react-redux'
-import { setCurrentPlaylist, setCurrentRoom } from '../../redux/reducers/gameReducer'
+import { connect } from 'react-redux'
+import { setCurrentPlaylist, setCurrentRoom, setPlaylists } from '../../redux/reducers/gameReducer'
 
 
 const Dashboard = (props) => {
-    const [playlists, setPlaylists] = useState([])
     const [highScores, setHighScores] = useState([])
 
-    const getPlaylists = async () => {
-        const playlistCalls = []
-        props.game.playlistIds.forEach(playlistId => {
-            playlistCalls.push(axios.post('http://localhost:4000/api/spotify/getPlaylist', { playlistId }))
-        })
-        const responseArray = await Promise.all(playlistCalls)
-        return responseArray.map(item => item.data)
-    }
 
     const getHighScores = async () => {
         const highScores = await axios.get(`http://localhost:4000/api/game/getUserHighScores/${props.auth.userId}`)
@@ -35,13 +26,13 @@ const Dashboard = (props) => {
     }
 
     useEffect(() => {
-        getPlaylists().then(res => setPlaylists(res))
+        props.setPlaylists()
         getHighScores().then(res => setHighScores(res))
     }, [props.game.playlistIds])
 
-    const playlistMap = playlists.map(item => <div className='playlist-card' key={item.id}>
-        <img data-name={item.name} data-id={item.id} onClick={newGame} src={item.images[0].url} alt='playlist' />
-        <p>{item.name}</p>
+    const playlistMap = props.game.playlists.map(item => <div className='playlist-card' key={item.id}>
+        <img onClick={(e) => newGame(e)} data-name={item.playlist_name} data-id={item.id} src={item.img_url} alt='playlist' />
+        <p>{item.playlist_name}</p>
     </div>)
 
     const highScoresMap = highScores.map((item, index) => <div key={index}>
@@ -66,6 +57,6 @@ const Dashboard = (props) => {
 
 const mapStateToProps = (reduxState) => reduxState
 
-const mapDispatchToProps = {setCurrentPlaylist, setCurrentRoom}
+const mapDispatchToProps = { setCurrentPlaylist, setCurrentRoom, setPlaylists }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard)
