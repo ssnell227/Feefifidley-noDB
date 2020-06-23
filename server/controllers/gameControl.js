@@ -7,7 +7,7 @@ module.exports = {
 
         await db.game_auth_link.insert({user_id: userId, game_id})
 
-        res.status(200).send({game_id})
+        res.status(201).send({game_id})
     },
     updateGame: async (req, res) => {
         const db = req.app.get('db')

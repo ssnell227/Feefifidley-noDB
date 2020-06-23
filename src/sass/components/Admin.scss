@@ -1,0 +1,6 @@
+.saved-playlist-container,
+.search-playlist-container {
+    @include flex(row);
+    flex-wrap: wrap;
+    width: 70%;
+}

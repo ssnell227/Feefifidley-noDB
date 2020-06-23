@@ -1,11 +1,15 @@
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
+import {useSelector, useDispatch} from 'react-redux'
 import { setUser } from '../../redux/reducers/authReducer'
 import axios from 'axios'
+
 
 const Auth = (props) => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+
+    const dispatch = useDispatch()
 
     const login = async (e) => {
         e.preventDefault()
@@ -13,10 +17,10 @@ const Auth = (props) => {
             const user = await axios.post('/api/auth/login', { username, password })
                 .catch(err => console.log('Somethings gone wrong:', err))
             if (user) {
-                const { user_id } = user.data
-
-                props.setUser(username, user_id)
-
+                const { user_id, isadmin } = user.data
+                const isAuthenticated = true;
+                dispatch(setUser(username, user_id, isadmin, isAuthenticated))
+                
                 props.history.push('/dashboard')
             }
         }
@@ -29,8 +33,9 @@ const Auth = (props) => {
                 .catch(err => console.log('Somethings gone wrong:', err))
 
             const { user_id } = newUser.data
+            const isAuthenticated = true
 
-            props.setUser(username, user_id)
+            dispatch(setUser(username, user_id, isAuthenticated))
 
             props.history.push('/dashboard')
         }
@@ -53,4 +58,4 @@ const Auth = (props) => {
     )
 }
 
-export default connect(null, { setUser })(Auth)
+export default Auth

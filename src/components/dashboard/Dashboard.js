@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { connect } from 'react-redux'
+import { connect} from 'react-redux'
 import { setCurrentPlaylist, setCurrentRoom } from '../../redux/reducers/gameReducer'
 
 

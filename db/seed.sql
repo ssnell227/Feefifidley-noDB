@@ -17,3 +17,10 @@ create table game_auth_link (
     user_id int references users(user_id),
     game_id int references game(game_id)
 );
+
+create table loaded_playlists (
+    id serial primary key,
+    playlist_name varchar(200),
+    spotify_id text
+    img_url text
+);

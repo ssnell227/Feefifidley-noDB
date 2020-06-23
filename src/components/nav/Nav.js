@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import axios from 'axios'
-import { withRouter } from 'react-router-dom'
+import { withRouter, Link } from 'react-router-dom'
 import { setUser } from '../../redux/reducers/authReducer'
 import {setCurrentRoom, setCurrentPlaylist} from '../../redux/reducers/gameReducer'
 
@@ -10,7 +10,7 @@ const Nav = (props) => {
     const logout = async () => {
         await axios.post('/api/auth/logout')
             .catch(err => console.log(err))
-        props.setUser('', null)
+        props.setUser('', null, false, false)
         props.setCurrentPlaylist({})
         props.setCurrentRoom('')
         props.history.push('/')
@@ -21,6 +21,7 @@ const Nav = (props) => {
             <div className='nav-inner-container'>
                 <img className='nav-logo' src='' alt='logo'/>
                 <div className='nav-buttons-container'>
+                    {props.auth.isAdmin && <Link to='/admin'>Admin</Link>}
                     <button onClick={() => props.history.push('/dashboard')}>Dashboard</button>
                     <button onClick={logout}>Log out</button>
                 </div>

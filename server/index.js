@@ -9,6 +9,7 @@ const express = require('express'),
 
 const authCtrl = require('./controllers/authControl'),
     gameCtrl = require('./controllers/gameControl'),
+    playlistCtrl = require('./controllers/playlistControl'),
     spotifyCtrl = require('./controllers/spotifyControl'),
     { SERVER_PORT, CONNECTION_STRING, SESSION_SECRET} = process.env
 
@@ -64,9 +65,18 @@ app.get('/api/game/getUserHighScores/:userId', gameCtrl.getUserHighScores)
 
 app.delete('/api/game/deleteGame', gameCtrl.deleteGame)
 
+//playlist endpoints
+
+app.get('/api/playlists', playlistCtrl.getPlaylists)
+
+app.post('/api/playlists', playlistCtrl.addPlaylist)
+
+app.delete('/api/playlists/:playlistId', playlistCtrl.removePlaylist)
+
 //spotify endpoints
 
 app.post('/api/spotify/getPlaylist', spotifyCtrl.getPlaylist)
 
 app.post('/api/spotify/getPlaylistItems', spotifyCtrl.getPlaylistItems)
 
+app.post('/api/spotify/playlistSearch', spotifyCtrl.playlistSearch)
