@@ -20,12 +20,12 @@ module.exports = function (io) {
             io.to(userObj.gameId).emit('roomData', {users: getUsersInRoom(userObj.gameId)})
             
 
-            //remove user from users array and resend room data to other users in room
-            // socket.on('leaveRoom', () => {
-            //     console.log('player disconnected')
-            //     removeUser(socket.id)
-            //     io.to(user.room).emit('roomData', {room: user.room, users: getUsersInRoom(user.room)})
-            // })
+            // remove user from users array and resend room data to other users in room
+            socket.on('leaveRoom', (userObj) => {
+                console.log('player disconnected')
+                removeUser(userObj)
+                io.to(userObj.gameId).emit('roomData', {users: getUsersInRoom(userObj.gameId)})
+            })
         })
 
     })

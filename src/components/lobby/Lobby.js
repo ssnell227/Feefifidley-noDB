@@ -21,14 +21,13 @@ const Lobby = (props) => {
 
 
         return () => {
-            socket.emit('leaveRoom')
+            socket.emit('leaveRoom', {gameId: currentRoom, username: props.auth.username})
             socket.off()
         }
     }, [endpoint])
 
     useEffect(() => {
         socket.on('roomData', ({users}) => {
-            console.log('recieving')
             setUsers(users)
         })
     }, [])
