@@ -15,10 +15,11 @@ const Dashboard = (props) => {
     }
 
     const newGame = async (e) => {
-        const { name, id } = e.target.dataset
+        const { name, id, spotifyid } = e.target.dataset
         props.setCurrentPlaylist({
             playlistName: name,
-            playlistId: id
+            playlistId: id,
+            spotifyId: spotifyid
         })
         const game = await axios.post('/api/game/newGame', { userId: props.auth.userId, playlist: name, playlist_id: id })
         const { game_id } = game.data
@@ -41,7 +42,7 @@ const Dashboard = (props) => {
     }, [props.game.playlistIds])
 
     const playlistMap = props.game.playlists.map(item => <div className='playlist-card' key={item.id}>
-        <img onClick={(e) => newGame(e)} data-name={item.playlist_name} data-id={item.id} src={item.img_url} alt='playlist' />
+        <img onClick={(e) => newGame(e)} data-name={item.playlist_name} data-id={item.id} data-spotifyid={item.spotify_id} src={item.img_url} alt='playlist' />
         <p>{item.playlist_name}</p>
     </div>)
 

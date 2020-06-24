@@ -72,6 +72,8 @@ app.delete('/api/game/deleteGame', gameCtrl.deleteGame)
 
 app.get('/api/playlists', playlistCtrl.getPlaylists)
 
+app.get('/api/playlists/:playlistId', playlistCtrl.getPlaylistById)
+
 app.post('/api/playlists', playlistCtrl.addPlaylist)
 
 app.delete('/api/playlists/:playlistId', playlistCtrl.removePlaylist)

@@ -6,6 +6,12 @@ module.exports = {
 
         res.status(200).send(games)
     },
+    getPlaylistById: async (req, res) => {
+        const db = req.app.get('db')
+        const {playlistId} = req.params
+        const playlist = await db.find({id: playlistId})
+        res.status(200).send(playlist)
+    },
     addPlaylist: async (req, res) => {
         const db = req.app.get('db')
         const {playlistName, spotifyId, imgURL} = req.body

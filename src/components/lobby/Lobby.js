@@ -15,7 +15,8 @@ const Lobby = (props) => {
         socket.emit('join', {
             username: props.auth.username,
             gameId: currentRoom,
-            playlist: currentPlaylist.playlist_name,
+            playlistName: currentPlaylist.playlistName,
+            playlistId: currentPlaylist.playlistId,
             spotifyId: currentPlaylist.spotifyId
         }, (err) => console.log(err))
 

@@ -1,4 +1,4 @@
-const {addRoom, addUser, removeUser, getUser, getUsersInRoom, getGameData, getRoom } = require('./game')
+const {addRoom, addUser, removeUser, getUser, getUsersInRoom, getGameData, getRoom, removeRoom } = require('./game')
 
 module.exports = function (io) {
     io.on('connection',  (socket) => {
@@ -14,19 +14,23 @@ module.exports = function (io) {
             } else {
                 addRoom(userObj)
             }
+            
+            //send out users in room to room
+            // io.to(userObj.gameId).emit('roomData', {users: getUsersInRoom(userObj.gameId)})
+
             // pull data for game on initial join
             
-            //send out users in room
-            io.to(userObj.gameId).emit('roomData', {users: getUsersInRoom(userObj.gameId)})
             
 
-            // remove user from users array and resend room data to other users in room
+            // remove user from users array and resend room data to other users in room.  If no users in room, remove the room
             socket.on('leaveRoom', (userObj) => {
                 console.log('player disconnected')
                 removeUser(userObj)
                 io.to(userObj.gameId).emit('roomData', {users: getUsersInRoom(userObj.gameId)})
+                if (!getUsersInRoom(userObj.gameId).length) {
+                    removeRoom(userObj.gameId)
+                }
             })
         })
-
     })
 } 

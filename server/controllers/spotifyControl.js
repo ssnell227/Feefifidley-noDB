@@ -17,10 +17,12 @@ module.exports = {
         }
     },
     getPlaylistItems: async (req, res) => {
-        const { playlistId } = req.body
+        const { spotifyId } = req.body
+        
         const accessToken = await authenticate()
             .catch(err => console.log(err))
-        const items = await axios.get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?fields=items(track(album(name,images),artists,name,preview_url))`, { headers: { Authorization: 'Bearer ' + accessToken } })
+        
+        const items = await axios.get(`https://api.spotify.com/v1/playlists/${spotifyId}/tracks?fields=items(track(album(name,images),artists,name,preview_url))`, { headers: { Authorization: 'Bearer ' + accessToken } })
             .catch(err => console.log(err))
 
         if (items) {
