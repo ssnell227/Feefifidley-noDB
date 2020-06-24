@@ -11,24 +11,22 @@ module.exports = function (io) {
             //if room exists, add user to room, else, create room
             if (getRoom(userObj.gameId)) {
                 addUser({gameId, username})
+                io.to(userObj.gameId).emit('roomData', {users: getUsersInRoom(userObj.gameId)})
             } else {
-                addRoom(userObj)
+                addRoom(userObj).then(() => io.to(userObj.gameId).emit('roomData', {users: getUsersInRoom(userObj.gameId)}))
             }
             
             //send out users in room to room
             // io.to(userObj.gameId).emit('roomData', {users: getUsersInRoom(userObj.gameId)})
-
-            // pull data for game on initial join
-            
             
 
             // remove user from users array and resend room data to other users in room.  If no users in room, remove the room
-            socket.on('leaveRoom', (userObj) => {
+            socket.on('leaveRoom', (leaveObj) => {
                 console.log('player disconnected')
-                removeUser(userObj)
-                io.to(userObj.gameId).emit('roomData', {users: getUsersInRoom(userObj.gameId)})
-                if (!getUsersInRoom(userObj.gameId).length) {
-                    removeRoom(userObj.gameId)
+                removeUser(leaveObj)
+                io.to(leaveObj.gameId).emit('roomData', {users: getUsersInRoom(leaveObj.gameId)})
+                if (!getUsersInRoom(leaveObj.gameId).length) {
+                    removeRoom(leaveObj.gameId)
                 }
             })
         })

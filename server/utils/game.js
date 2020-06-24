@@ -14,7 +14,6 @@ const addRoom = async ({username, gameId, playlistName, playlistId, spotifyId}) 
         spotifyId,
         tracks: data
     })
-    console.log(rooms.find(room => room.gameId === gameId))
 }
 
 const removeRoom = ({gameId}) => {
