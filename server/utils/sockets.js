@@ -16,9 +16,6 @@ module.exports = function (io) {
                 addRoom(userObj).then(() => io.to(userObj.gameId).emit('roomData', {users: getUsersInRoom(userObj.gameId)}))
             }
             
-            //send out users in room to room
-            // io.to(userObj.gameId).emit('roomData', {users: getUsersInRoom(userObj.gameId)})
-            
 
             // remove user from users array and resend room data to other users in room.  If no users in room, remove the room
             socket.on('leaveRoom', (leaveObj) => {

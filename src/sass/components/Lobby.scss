@@ -1,0 +1,8 @@
+.lobby-outer-container {
+    @include outer-container;
+}
+
+.lobby-inner-container {
+    @include centered;
+    height: 90%;
+}
