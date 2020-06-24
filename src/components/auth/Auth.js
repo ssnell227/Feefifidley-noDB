@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { connect } from 'react-redux'
-import {useSelector, useDispatch} from 'react-redux'
+import {useDispatch} from 'react-redux'
 import { setUser } from '../../redux/reducers/authReducer'
 import axios from 'axios'
 

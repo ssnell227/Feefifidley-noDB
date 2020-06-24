@@ -4,28 +4,45 @@ import {connect} from 'react-redux'
 const endpoint = '127.0.0.1:4000'
 
 let socket;
-
+ 
 const Lobby = (props) => {
-    const [room, setRoom] = useState('')
     const [users, setUsers] = useState([])
 
     useEffect(() => {
-        const {currentRoom} = props.game.currentRoom
+        const {currentRoom, currentPlaylist} = props.game
         socket = io(endpoint)
 
-        console.log(socket)
+        socket.emit('join', {
+            username: props.auth.username,
+            gameId: currentRoom,
+            playlist: currentPlaylist.playlist_name,
+            spotifyId: currentPlaylist.spotifyId
+        }, (err) => console.log(err))
 
-        setRoom(currentRoom)
+
         return () => {
-            console.log('disconnect firing')
-            socket.emit('disconnect')
+            socket.emit('leaveRoom')
             socket.off()
         }
+    }, [endpoint])
+
+    useEffect(() => {
+        socket.on('roomData', ({users}) => {
+            console.log('recieving')
+            setUsers(users)
+        })
     }, [])
+
+    const usersMap = users.map((user, index) => <p key={index}>{user}</p>)
 
     return (
         <div>
-            Lobby
+            <p>{props.game.currentPlaylist.playlistName}</p>
+            <button>Start game</button>
+            <div>
+                <h2>Users</h2>
+                {usersMap}
+            </div>
         </div>
     )
 }

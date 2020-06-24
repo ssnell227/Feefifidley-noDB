@@ -1,7 +1,6 @@
 import axios from 'axios'
 
 const initialState = {
-    //hardcoded playlist ids for now
     playlists: [],
     currentPlaylist: {},
     currentRoom: '',

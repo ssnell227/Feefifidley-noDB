@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import axios from 'axios'
 import { setCurrentPlaylist } from '../../redux/reducers/gameReducer'
-import gameplay from '../../utils/gameplay'
 import Countdown from 'react-countdown'
 
 const Game = (props) => {

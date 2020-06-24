@@ -11,12 +11,12 @@ const authCtrl = require('./controllers/authControl'),
     gameCtrl = require('./controllers/gameControl'),
     playlistCtrl = require('./controllers/playlistControl'),
     spotifyCtrl = require('./controllers/spotifyControl'),
-    { SERVER_PORT, CONNECTION_STRING, SESSION_SECRET} = process.env
+    { SERVER_PORT, CONNECTION_STRING, SESSION_SECRET } = process.env
 
 const app = express()
-const server = http.createServer(app)
-const io = require('socket.io')(server)
-require('./sockets')(io)
+
+
+
 
 app.use(express.json())
 app.use(cors())
@@ -41,11 +41,12 @@ massive({
         process.end()
     })
 
-server.listen(SERVER_PORT, () => console.log(`Listening on ${SERVER_PORT}`))
 
 
+const server = app.listen(SERVER_PORT, () => console.log(`Listening on ${SERVER_PORT}`))
 
-
+const io = require('socket.io')(server)
+require('./utils/sockets')(io)
 
 //auth endpoints
 
@@ -60,6 +61,8 @@ app.post('/api/auth/logout', authCtrl.logout)
 app.post('/api/game/newGame', gameCtrl.newGame)
 
 app.put('/api/game/updateGame', gameCtrl.updateGame)
+
+app.get('/api/game/:gameId', gameCtrl.getGameById)
 
 app.get('/api/game/getUserHighScores/:userId', gameCtrl.getUserHighScores)
 

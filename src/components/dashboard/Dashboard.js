@@ -6,6 +6,7 @@ import { setCurrentPlaylist, setCurrentRoom, setPlaylists } from '../../redux/re
 
 const Dashboard = (props) => {
     const [highScores, setHighScores] = useState([])
+    const [joinGameInput, setJoinGameInput] = useState([])
 
 
     const getHighScores = async () => {
@@ -19,9 +20,18 @@ const Dashboard = (props) => {
             playlistName: name,
             playlistId: id
         })
-        const game = await axios.post('/api/game/newGame', { userId: props.auth.userId, playlist: name })
+        const game = await axios.post('/api/game/newGame', { userId: props.auth.userId, playlist: name, playlist_id: id })
         const { game_id } = game.data
         props.setCurrentRoom(game_id)
+        props.history.push(`/game/${game_id}`)
+    }
+
+    const joinGame = async () => {
+        const {data} = await axios.get(`/api/game/${joinGameInput}`)
+        const {game_id, playlist, playlist_id} = data
+
+        props.setCurrentRoom(game_id)
+        props.setCurrentPlaylist({playlistName: playlist, playlistId: playlist_id})
         props.history.push(`/game/${game_id}`)
     }
 
@@ -45,6 +55,11 @@ const Dashboard = (props) => {
             <div className='dashboard-inner-container'>
                 <div className='playlist-map-container'>
                     {playlistMap}
+                </div>
+                <div>
+                    <h2>Join game</h2>
+                    <input onChange={(e) => setJoinGameInput(e.target.value)}/>
+                    <button onClick={() => joinGame()}>Join</button>
                 </div>
                 <div className='high-scores-container'>
                     <h2>Your high scores</h2>

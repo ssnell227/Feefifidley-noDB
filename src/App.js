@@ -7,6 +7,7 @@ import './sass/App.scss'
 
 
 function App(props) {
+
   return (
     <div className="App">
       {props.location.pathname !== '/' && <Nav />}

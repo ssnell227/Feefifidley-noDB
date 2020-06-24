@@ -1,6 +1,7 @@
 create table game (
     game_id serial primary key,
     playlist varchar(100),
+    playlist_id foreign key references loaded_playlists(id)
     score int,
     song_list text
 );
