@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import io from 'socket.io-client'
+import SocketGame from '../game/SocketGame'
 import { connect } from 'react-redux'
 const endpoint = '127.0.0.1:4000'
 
@@ -7,9 +8,15 @@ let socket;
 
 const Lobby = (props) => {
     const [users, setUsers] = useState([])
+    const [gameState, setGameState] = useState('lobby')
 
+    const startGame = () => {
+        socket.emit('startGame')
+    }
+    
     useEffect(() => {
         const { currentRoom, currentPlaylist } = props.game
+        
         socket = io(endpoint)
 
         socket.emit('join', {
@@ -22,14 +29,28 @@ const Lobby = (props) => {
 
 
         return () => {
-            socket.emit('leaveRoom', { gameId: currentRoom, username: props.auth.username })
+            socket.emit('leaveRoom', { gameId: currentRoom, username: props.auth.username, socketId: socket.id })
             socket.off()
         }
     }, [endpoint])
 
     useEffect(() => {
         socket.on('roomData', ({ users }) => {
-            setUsers(users)
+            console.log('getting room data')
+            const usernames = users.map(user => user.username)
+            setUsers(usernames)
+        })
+    }, [])
+
+    useEffect(() => {
+        socket.on('begin', () => {
+            setGameState('game')
+        })
+    }, [])
+
+    useEffect(() => {
+        socket.on('gameInProgress' , () => {
+            setGameState('inProgress')
         })
     }, [])
 
@@ -39,11 +60,13 @@ const Lobby = (props) => {
         <div className='lobby-outer-container'>
             <div className='lobby-inner-container'>
                 <p>{props.game.currentPlaylist.playlistName}</p>
-                <button>Start game</button>
+                <button onClick={() => startGame()}>Start game</button>
                 <div>
                     <h2>Users</h2>
                     {usersMap}
                 </div>
+                {gameState === 'game' && <SocketGame socket={socket}/>}
+                {gameState ==='inProgress' && <h1>Sorry, this game has already started!</h1>}
             </div>
         </div>
     )

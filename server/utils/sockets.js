@@ -1,29 +1,44 @@
-const {addRoom, addUser, removeUser, getUser, getUsersInRoom, getGameData, getRoom, removeRoom } = require('./game')
+const {addRoom, addUser, removeUser, getUser, getUsersInRoom, getGameData, getRoom, removeRoom, getReady, } = require('./game')
 
 module.exports = function (io) {
     io.on('connection',  (socket) => {
-        console.log('player connected')
 
         socket.on('join', (userObj, cb) => {
-            const { username, gameId, playlist, spotifyId} = userObj
-            socket.join(userObj.gameId)
+            const { username, gameId, playlistName, playlistId, spotifyId} = userObj
+            socket.join(gameId)
+
+
+
             
             //if room exists, add user to room, else, create room
-            if (getRoom(userObj.gameId)) {
-                addUser({gameId, username})
-                io.to(userObj.gameId).emit('roomData', {users: getUsersInRoom(userObj.gameId)})
-            } else {
-                addRoom(userObj).then(() => io.to(userObj.gameId).emit('roomData', {users: getUsersInRoom(userObj.gameId)}))
+            if (getRoom(gameId) && !getRoom(gameId).playing) {
+                addUser({gameId, username, socketId: socket.id})
+                io.in(gameId).emit('roomData', {users: getUsersInRoom(gameId)})
+            } else if(getRoom(gameId) && getRoom(gameId).playing) {
+                ioio.in(gameId).emit('gameInProgress')
+            }else {
+                addRoom(userObj, socket.id).then(() => io.in(gameId).emit('roomData', {users: getUsersInRoom(gameId)}))
             }
+
+            socket.on('startGame', () => {
+                getRoom(gameId).playing = true
+                
+            })
             
 
             // remove user from users array and resend room data to other users in room.  If no users in room, remove the room
             socket.on('leaveRoom', (leaveObj) => {
-                console.log('player disconnected')
                 removeUser(leaveObj)
-                io.to(leaveObj.gameId).emit('roomData', {users: getUsersInRoom(leaveObj.gameId)})
+                io.in(leaveObj.gameId).emit('roomData', {users: getUsersInRoom(leaveObj.gameId)})
                 if (!getUsersInRoom(leaveObj.gameId).length) {
                     removeRoom(leaveObj.gameId)
+                    
+                }
+            })
+            socket.on('disconnect', () => {
+                removeUser({gameId, socketId: socket.id})
+                if (!getUsersInRoom(gameId).length) {
+                    removeRoom(gameId)
                 }
             })
         })

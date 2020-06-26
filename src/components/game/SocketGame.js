@@ -1,28 +1,48 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import io from 'socket.io-client'
+
 
 const SocketGame = (props) => {
-    const [gameState, setGameState] = useState('getReady')
+    const [gameState, setGameState] = useState(false)
+    const [gameOver, setGameOver] = useState(false)
+    const [timerSeconds, setTimerSeconds] = useState(null)
+
+    useEffect(() => {
+        props.socket.on('timerDecrement', ({seconds}) => {
+            console.log(seconds)
+            setTimerSeconds(seconds)
+        })
+
+        props.socket.on('switchMode', () => {
+            setGameState(!gameState)
+        })
+
+        props.socket.on('gameOver', () => {
+            setGameOver(true)
+        })
+    }, [])
+
+
     return (
         <div className='game-outer-container'>
             <div className='game-inner-container'>
-                playlist name
-                {gameState === 'getReady' &&
+                {gameState === false &&
                     <div>
                         Get Ready!
                         <div>
-                            Timer
+                            <p>{timerSeconds}</p>
                         </div>
                     </div>
                 }
-                {gameState === 'playing' &&
+                {gameState === true &&
                     <div>
                         <div>
-                            Timer
+                            <p>{timerSeconds}</p>
                         </div>
                         Choice map
                     </div>
                 }
-                {gameState === 'finished' &&
+                {gameOver === true &&
                     <div>
                         <div>
                             ranking map
