@@ -36,7 +36,6 @@ const Lobby = (props) => {
 
     useEffect(() => {
         socket.on('roomData', ({ users }) => {
-            console.log('getting room data')
             const usernames = users.map(user => user.username)
             setUsers(usernames)
         })

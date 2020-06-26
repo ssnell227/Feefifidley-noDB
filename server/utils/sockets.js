@@ -1,4 +1,4 @@
-const {addRoom, addUser, removeUser, getUsersInRoom, getGameData, getRoom, removeRoom, getReady, } = require('./game')
+const {addRoom, addUser, removeUser, getUsersInRoom, getGameData, getRoom, removeRoom, runGame } = require('./game')
 
 module.exports = function (io) {
     io.on('connection',  (socket) => {
@@ -15,14 +15,15 @@ module.exports = function (io) {
                 addUser({gameId, username, socketId: socket.id})
                 io.in(gameId).emit('roomData', {users: getUsersInRoom(gameId)})
             } else if(getRoom(gameId) && getRoom(gameId).playing) {
-                ioio.in(gameId).emit('gameInProgress')
+                io.in(gameId).emit('gameInProgress')
             }else {
                 addRoom(userObj, socket.id).then(() => io.in(gameId).emit('roomData', {users: getUsersInRoom(gameId)}))
             }
 
             socket.on('startGame', () => {
                 getRoom(gameId).playing = true
-                
+                io.in(gameId).emit('begin')
+                runGame(io, gameId)
             })
             
 

@@ -14,63 +14,53 @@ const getGameData = async () => {
     const playlistItems = await axios.post('/api/spotify/getPlaylistItems',)
 }
 
-const getReady = (io, gameId) => {
-    const currentRoom = rooms.find(item => item.gameId === gameId)
-
-    currentRoom.counter = 5
-    return new Promise(res => {
-        const getReadyTimer = setInterval(() => {
-            if (currentRoom.counter > 0) {
-                io.to(gameId).emit('timerDecrement', { seconds: currentRoom.counter })
-                seconds--
-            } else if (currentRoom.currentRound >= rounds) {
-                return io.to(gameId).emit('gameOver')
-            } else {
-                clearInterval(getReadyTimer)
-                io.to(gameId).emit('switchMode')
-                guessSong(io, gameId)
-                res()
-            }
-        }, 1000)
-    })
-}
-
-const guessSong = (io, gameId, songsObj) => {
-    const currentRoom = rooms.find(item => item.gameId === gameId)
-
-    currentRoom.counter = 10
-    return new Promise(res => {
-        guessTimer = setInterval(() => {
-            if (currentRoom.counter > 0) {
-                io.to(gameId).emit('timerDecrement', { seconds: currentRoom.counter })
-                currentRoom.counter--
-            } else {
-                clearInterval(guessTimer)
-                io.to(gameId).emit('switchMode')
-                currentRoom.currentRound++
-                getReady()
-                res()
-            }
-        }, 1000)
-    })
-}
-
 const runGame = async (io, gameId) => {
-    const currentRoom = rooms.find(item => item.gameId === gameId)
-    if (currentRoom.currentRound === 1) {
-        io.to(gameId).emit('begin')
-        await getReady(io, gameId)
-        await guessSong(io, gameId)
-        currentRoom.currentRound++
-        runGame(io, gameId)
-    } else if (currentRoom.currentRound > 5) {
-        return io.to(gameId).emit('gameOver')
-    } else {
-        await getReady(io, gameId)
-        await guessSong(io, gameId)
-        currentRoom.currentRound++
-        runGame(io, gameId)
+    const getReady = (io, gameId) => {
+        const currentRoom = getRoom(gameId)
+        currentRoom.counter = 5
+
+        if (currentRoom) {
+            return new Promise(res => {
+                const getReadyTimer = setInterval(() => {
+                    if (currentRoom.currentRound > rounds) {
+                        return io.in(gameId).emit('gameOver')
+                    } else if (currentRoom.counter > 0) {
+                        io.in(gameId).emit('timerDecrement', { seconds: currentRoom.counter })
+                        currentRoom.counter--
+                    } else {
+                        console.log('get ready', gameId)
+                        clearInterval(getReadyTimer)
+                        io.to(gameId).emit('switchMode')
+                        guessSong(io, gameId)
+                        res()
+                    }
+                }, 1000)
+            })
+        }
     }
+
+    const guessSong = (io, gameId, songsObj) => {
+        const currentRoom = getRoom(gameId)
+        currentRoom.counter = 10
+
+        return new Promise(res => {
+            guessTimer = setInterval(() => {
+                if (currentRoom.counter > 0) {
+                    io.in(gameId).emit('timerDecrement', { seconds: currentRoom.counter })
+                    currentRoom.counter--
+                } else {
+                    console.log('guessSong', gameId)
+                    clearInterval(guessTimer)
+                    io.in(gameId).emit('switchMode')
+                    currentRoom.currentRound++
+                    getReady(io, gameId)
+                    res()
+                }
+            }, 1000)
+        })
+    }
+
+    getReady(io, gameId)
 }
 
 //room functions
@@ -79,7 +69,7 @@ const getRoom = (gameId) => {
     return rooms.find(item => item.gameId === gameId)
 }
 
-const addRoom = async ({ username, gameId, playlistName, playlistId, spotifyId}, socketId) => {
+const addRoom = async ({ username, gameId, playlistName, playlistId, spotifyId }, socketId) => {
 
     const { data } = await axios.post('http://localhost:4000/api/spotify/getPlaylistItems', { spotifyId })
         .catch(err => console.log(err))
@@ -135,12 +125,12 @@ const addUser = ({ gameId, username, socketId }) => {
     users.push({ username, socketId })
 }
 
-const removeUser = ({gameId, socketId }) => {
+const removeUser = ({ gameId, socketId }) => {
     const users = rooms.find(item => item.gameId === gameId).users
 
-    
+
     const index = users.findIndex(user => user.socketId === socketId)
-    
+
     if (index !== -1) {
         return users.splice(index, 1)[0]
     }
@@ -156,4 +146,4 @@ const getUsersInRoom = (gameId) => {
 }
 
 
-module.exports = { getRoom, addRoom, removeRoom, addUser, removeUser, getUsersInRoom, getGameData, getReady }
+module.exports = { getRoom, addRoom, removeRoom, addUser, removeUser, getUsersInRoom, getGameData, runGame }
