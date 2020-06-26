@@ -1,9 +1,12 @@
 const axios = require('axios')
+const CronJob = require('cron').CronJob
 
 const rooms = []
 
-const rounds = 5;
+const rounds = 2;
 const dummySongs = 3
+const getReadySeconds = 2
+const gameSeconds = 3
 
 const getRandomSong = (tracksArray) => {
     let randomIndex = Math.floor(Math.random() * tracksArray.length - 1)
@@ -15,52 +18,86 @@ const getGameData = async () => {
 }
 
 const runGame = async (io, gameId) => {
-    const getReady = (io, gameId) => {
-        const currentRoom = getRoom(gameId)
-        currentRoom.counter = 5
+    const currentRoom = getRoom(gameId)
+    currentRoom.counter = getReadySeconds
 
-        if (currentRoom) {
-            return new Promise(res => {
-                const getReadyTimer = setInterval(() => {
-                    if (currentRoom.currentRound > rounds) {
-                        return io.in(gameId).emit('gameOver')
-                    } else if (currentRoom.counter > 0) {
-                        io.in(gameId).emit('timerDecrement', { seconds: currentRoom.counter })
-                        currentRoom.counter--
-                    } else {
-                        console.log('get ready', gameId)
-                        clearInterval(getReadyTimer)
-                        io.to(gameId).emit('switchMode')
-                        guessSong(io, gameId)
-                        res()
-                    }
-                }, 1000)
-            })
+    const getReadyTimer = new CronJob('*/1 * * * * *', () => {
+        if (currentRoom.currentRound > rounds) {
+            getReadyTimer.stop()
+            return io.in(gameId).emit('gameOver')
+        }else if (currentRoom.counter > 0) {
+            io.in(gameId).emit('timerDecrement', { seconds: currentRoom.counter })
+            currentRoom.counter--
+        } else if (currentRoom.counter <= 0) {
+            getReadyTimer.stop()
+            io.in(gameId).emit('switchMode')
+            console.log('switch to gameplay')
+            currentRoom.counter = gameSeconds
+            gamePlayTimer.start() 
         }
-    }
+    }) 
+     
+    const gamePlayTimer = new CronJob('*/1 * * * * *', () => {
+        if (currentRoom.counter > 0) {
+            io.in(gameId).emit('timerDecrement', { seconds: currentRoom.counter })
+            currentRoom.counter--
+        } else if (currentRoom.counter <=0) {
+            gamePlayTimer.stop()
+            io.in(gameId).emit('switchMode')
+            console.log('switch to get ready')
+            currentRoom.currentRound ++
+            currentRoom.counter = getReadySeconds
+            getReadyTimer.start()
+        }
+    })
+    getReadyTimer.start() 
 
-    const guessSong = (io, gameId, songsObj) => {
-        const currentRoom = getRoom(gameId)
-        currentRoom.counter = 10
 
-        return new Promise(res => {
-            guessTimer = setInterval(() => {
-                if (currentRoom.counter > 0) {
-                    io.in(gameId).emit('timerDecrement', { seconds: currentRoom.counter })
-                    currentRoom.counter--
-                } else {
-                    console.log('guessSong', gameId)
-                    clearInterval(guessTimer)
-                    io.in(gameId).emit('switchMode')
-                    currentRoom.currentRound++
-                    getReady(io, gameId)
-                    res()
-                }
-            }, 1000)
-        })
-    }
 
-    getReady(io, gameId)
+    // const getReady = (io, gameId) => {
+    //     console.log(gameId)
+    //     if (currentRoom) {
+    //         return new Promise(res => {
+    //             const getReadyTimer = setInterval(async () => {
+    //                 if (currentRoom.currentRound > rounds) {
+    //                     return io.in(gameId).emit('gameOver')
+    //                 } else if (currentRoom.counter > 0) {
+    //                     io.in(gameId).emit('timerDecrement', { seconds: currentRoom.counter })
+    //                     currentRoom.counter--
+    //                 } else {
+    //                     console.log('get ready', gameId)
+    //                     clearInterval(getReadyTimer)
+    //                     io.to(gameId).emit('switchMode')
+    //                     await guessSong(io, gameId)
+    //                     res()
+    //                 }
+    //             }, 1000)
+    //         })
+    //     }
+    // }
+
+    // const guessSong = (io, gameId, songsObj) => {
+    //     const currentRoom = getRoom(gameId)
+    //     currentRoom.counter = 10
+    //     console.log(gameId)
+    //     return new Promise(res => {
+    //         guessTimer = setInterval(() => {
+    //             if (currentRoom.counter > 0) {
+    //                 io.in(gameId).emit('timerDecrement', { seconds: currentRoom.counter })
+    //                 currentRoom.counter--
+    //             } else {
+    //                 console.log('guessSong', gameId)
+    //                 clearInterval(guessTimer)
+    //                 io.in(gameId).emit('switchMode')
+    //                 currentRoom.currentRound++
+    //                 getReady(io, gameId)
+    //                 res()
+    //             }
+    //         }, 1000)
+    //     })
+    // }
+
+    // getReady(io, gameId)
 }
 
 //room functions
