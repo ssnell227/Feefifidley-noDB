@@ -1,4 +1,4 @@
-const {addRoom, addUser, removeUser, getUser, getUsersInRoom, getGameData, getRoom, removeRoom, getReady, } = require('./game')
+const {addRoom, addUser, removeUser, getUsersInRoom, getGameData, getRoom, removeRoom, getReady, } = require('./game')
 
 module.exports = function (io) {
     io.on('connection',  (socket) => {
@@ -37,6 +37,7 @@ module.exports = function (io) {
             })
             socket.on('disconnect', () => {
                 removeUser({gameId, socketId: socket.id})
+                io.in(gameId).emit('roomData', {users: getUsersInRoom(gameId)})
                 if (!getUsersInRoom(gameId).length) {
                     removeRoom(gameId)
                 }

@@ -17,11 +17,11 @@ const getGameData = async () => {
 const getReady = (io, gameId) => {
     const currentRoom = rooms.find(item => item.gameId === gameId)
 
-    let seconds = 5
+    currentRoom.counter = 5
     return new Promise(res => {
         const getReadyTimer = setInterval(() => {
-            if (seconds > 0) {
-                io.to(gameId).emit('timerDecrement', { seconds })
+            if (currentRoom.counter > 0) {
+                io.to(gameId).emit('timerDecrement', { seconds: currentRoom.counter })
                 seconds--
             } else if (currentRoom.currentRound >= rounds) {
                 return io.to(gameId).emit('gameOver')
@@ -38,12 +38,12 @@ const getReady = (io, gameId) => {
 const guessSong = (io, gameId, songsObj) => {
     const currentRoom = rooms.find(item => item.gameId === gameId)
 
-    let seconds = 10
+    currentRoom.counter = 10
     return new Promise(res => {
         guessTimer = setInterval(() => {
-            if (seconds > 0) {
-                io.to(gameId).emit('timerDecrement', { seconds })
-                seconds--
+            if (currentRoom.counter > 0) {
+                io.to(gameId).emit('timerDecrement', { seconds: currentRoom.counter })
+                currentRoom.counter--
             } else {
                 clearInterval(guessTimer)
                 io.to(gameId).emit('switchMode')
@@ -71,7 +71,6 @@ const runGame = async (io, gameId) => {
         currentRoom.currentRound++
         runGame(io, gameId)
     }
-
 }
 
 //room functions
@@ -118,7 +117,8 @@ const addRoom = async ({ username, gameId, playlistName, playlistId, spotifyId},
         spotifyId,
         gameObjs: getGameSongs(withPreview),
         playing: false,
-        currentRound: 1
+        currentRound: 1,
+        counter: 0
     })
 }
 
@@ -135,7 +135,7 @@ const addUser = ({ gameId, username, socketId }) => {
     users.push({ username, socketId })
 }
 
-const removeUser = ({ username, gameId, socketId }) => {
+const removeUser = ({gameId, socketId }) => {
     const users = rooms.find(item => item.gameId === gameId).users
 
     
@@ -144,10 +144,6 @@ const removeUser = ({ username, gameId, socketId }) => {
     if (index !== -1) {
         return users.splice(index, 1)[0]
     }
-}
-
-const getUser = (username) => {
-
 }
 
 
@@ -160,4 +156,4 @@ const getUsersInRoom = (gameId) => {
 }
 
 
-module.exports = { getRoom, addRoom, removeRoom, addUser, removeUser, getUser, getUsersInRoom, getGameData, getReady }
+module.exports = { getRoom, addRoom, removeRoom, addUser, removeUser, getUsersInRoom, getGameData, getReady }
