@@ -59,7 +59,7 @@ const Lobby = (props) => {
         <div className='lobby-outer-container'>
             <div className='lobby-inner-container'>
                 <p>{props.game.currentPlaylist.playlistName}</p>
-                <button onClick={() => startGame()}>Start game</button>
+                {gameState === 'lobby' && <button onClick={() => startGame()}>Start game</button>}
                 <div>
                     <h2>Users</h2>
                     {usersMap}
