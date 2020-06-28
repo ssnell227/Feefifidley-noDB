@@ -3,16 +3,11 @@ import axios from 'axios'
 import { connect } from 'react-redux'
 import { setCurrentPlaylist, setCurrentRoom, setPlaylists } from '../../redux/reducers/gameReducer'
 
-
 const Dashboard = (props) => {
-    const [highScores, setHighScores] = useState([])
     const [joinGameInput, setJoinGameInput] = useState([])
 
 
-    const getHighScores = async () => {
-        const highScores = await axios.get(`http://localhost:4000/api/game/getUserHighScores/${props.auth.userId}`)
-        return highScores.data
-    }
+    
 
     const newGame = async (e) => {
         const { name, id, spotifyid } = e.target.dataset
@@ -38,7 +33,6 @@ const Dashboard = (props) => {
 
     useEffect(() => {
         props.setPlaylists()
-        getHighScores().then(res => setHighScores(res))
     }, [props.game.playlistIds])
 
     const playlistMap = props.game.playlists.map(item => <div className='playlist-card' key={item.id}>
@@ -46,10 +40,7 @@ const Dashboard = (props) => {
         <p>{item.playlist_name}</p>
     </div>)
 
-    const highScoresMap = highScores.map((item, index) => <div key={index}>
-        <p>{item.playlist}</p>
-        <p>{item.score}</p>
-    </div>)
+    
 
     return (
         <div className='dashboard-outer-container'>
@@ -64,7 +55,6 @@ const Dashboard = (props) => {
                 </div>
                 <div className='high-scores-container'>
                     <h2>Your high scores</h2>
-                    {highScoresMap}
                 </div>
             </div>
         </div>

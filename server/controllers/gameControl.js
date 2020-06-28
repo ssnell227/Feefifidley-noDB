@@ -11,9 +11,8 @@ module.exports = {
     },
     updateGame: async (req, res) => {
         const db = req.app.get('db')
-        const { gameId, score, songList } = req.body
-        console.log(playlist_id)
-        await db.game.save({ game_id: gameId, score: score, song_list: songList})
+        const { gameId, userList, songList, winner } = req.body
+        await db.game.save({ game_id: gameId, user_list: userList, song_list: songList, winner})
 
         res.sendStatus(200)
     },

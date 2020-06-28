@@ -3,7 +3,9 @@ create table game (
     playlist varchar(100),
     playlist_id foreign key references loaded_playlists(id)
     score int,
-    song_list text
+    song_list text,
+    user_list text,
+    winner varchar(100)
 );
 
 create table users (

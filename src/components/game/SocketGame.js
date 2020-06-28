@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+
+import blankArtistImage from '../../images/blank-artist-photo.png'
 
 
 const SocketGame = (props) => {
     const [gameState, setGameState] = useState(false)
     const [gameOver, setGameOver] = useState(false)
     const [timerSeconds, setTimerSeconds] = useState(null)
-    const [currentSongObj, setCurrentSongObj] = useState({})
     const [round, setRound] = useState(0)
-    
+    const [songSet, setSongSet] = useState([])
+    const [guessed, setGuessed] = useState(false)
 
     useEffect(() => {
         props.socket.on('timerDecrement', ({ seconds }) => {
-            console.log(seconds)
             setTimerSeconds(seconds)
         })
 
@@ -31,51 +33,92 @@ const SocketGame = (props) => {
     useEffect(() => {
         props.socket.on('nextRound', () => {
             setRound(round + 1)
+            setGuessed(false)
+            if (round < props.currentSongObj.length) {
+                generateRandomOrdered()
+            }
         })
     }, [round])
 
-    useEffect(() => {
-        props.socket.on('sendSongs', (sentSongs) => {
-            console.log(sentSongs.currentSongObj)
-            setCurrentSongObj(sentSongs.currentSongObj)
+    const clickAnswer = (e) => {
+        const correctSong = props.currentSongObj[round-1].song.name
+
+        setGuessed(true)
+
+        if (e.target.dataset.name === correctSong  && !guessed) {
+            props.socket.emit('changeScore', {gameId: props.gameInfo.gameId, socketId: props.gameInfo.socketId, correctSong, date: Date.now()})
+        }
+    }
+
+    const generateRandomOrdered = () => {
+        const choiceArray = [props.currentSongObj[round].song, ...props.currentSongObj[round].dummyArray]
+        const availableIndices = choiceArray.map((i, index) => index)
+        const shuffledArray = new Array(4)
+
+        choiceArray.forEach(item => {
+            const randomIndex = Math.floor(Math.random() * availableIndices.length - 1)
+
+            shuffledArray.splice(availableIndices.splice(randomIndex, 1), 1, item)
         })
 
-    }, [currentSongObj])
+        setSongSet(shuffledArray)
+    }
+
+    const songsMap = songSet.map((item, index) => {
+        return (
+            <div  className={`game-card game-card-playing ${guessed &&item.correct && 'correct'} ${guessed && !item.correct && 'wrong'}`} key={`${item.name}-${index}`}>
+                <img  onClick={(e) => clickAnswer(e)} data-name={item.name} className='game-card-image' src={item.album.images[0].url} alt='album-art'/>
+                <div className='game-card-info'>
+                    <p>{item.name}</p>
+                    <p>{item.artists[0].name}</p>
+                </div>
+            </div>
+        )
+    })
+
+    const blankMap = songSet.map((item, index) => {
+        return (
+            <div className='game-card' key={index}>
+                <img className='game-card-image' src={blankArtistImage} />
+                <div className='game-card-info'>
+                    <p>Track name</p>
+                    <p>Artist</p>
+                </div>
+            </div>
+        )
+    })
+
+    
 
 
     return (
         <div className='game-outer-container'>
             <div className='game-inner-container'>
-                {!gameState &&
+                {!gameState && !gameOver &&
                     <div>
                         Get Ready!
                         <div>
                             <p>{timerSeconds}</p>
                         </div>
-                        <div>
-
+                        <div className='game-songs-container'>
+                            {blankMap}
                         </div>
                     </div>
                 }
-                {gameState &&
+                {gameState && !gameOver &&
                     <div>
                         <div>
                             <p>{timerSeconds}</p>
                         </div>
                         <div>
-                            <audio autoPlay src={currentSongObj[round -1].song.preview_url}/>
+                            <audio autoPlay src={props.currentSongObj[round - 1].song.preview_url} />
                         </div>
-                        Choice map
+                        <div className='game-songs-container'>
+                            {songsMap}
+                        </div>
                     </div>
                 }
-                {gameOver &&
-                    <div>
-                        <div>
-                            ranking map
-                        </div>
-                        <button>Play again?</button>
-                    </div>
-                }
+                
             </div>
         </div>
     )

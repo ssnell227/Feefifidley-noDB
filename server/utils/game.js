@@ -3,10 +3,10 @@ const CronJob = require('cron').CronJob
 
 const rooms = []
 
-const rounds = 3;
+const rounds = 2;
 const dummySongs = 3
 const getReadySeconds = 5
-const gameSeconds = 10
+const gameSeconds = 5
 
 const getRandomSong = (tracksArray) => {
     let randomIndex = Math.floor(Math.random() * tracksArray.length - 1)
@@ -17,45 +17,85 @@ const getGameData = async () => {
     const playlistItems = await axios.post('/api/spotify/getPlaylistItems',)
 }
 
+const calculateWinner = (userArray) => {
+    const winner = userArray.map(user => {
+        const userScore = user.score.map(item => 1 + 1 / (item.date % 100000))
+        return { username: user.username, userScore }
+    }).sort((a, b) => b.userScore - a.userScore)[0]
+    return winner.username
+}
+
 const runGame = async (io, gameId) => {
+
     const currentRoom = getRoom(gameId)
     currentRoom.counter = getReadySeconds
 
-    io.in(gameId).emit('sendSongs', {currentSongObj: currentRoom.gameObjs})
+
+
     io.in(gameId).emit('nextRound')
 
     const getReadyTimer = new CronJob('*/1 * * * * *', () => {
-        if (currentRoom.currentRound > rounds) {
-            getReadyTimer.stop()
-            return io.in(gameId).emit('gameOver')
-        }else if (currentRoom.counter > 0) {
+        if (!getUsersInRoom(gameId)) {
+            return getReadyTimer.stop()
+        } else if (currentRoom.counter > 0) {
             io.in(gameId).emit('timerDecrement', { seconds: currentRoom.counter })
             currentRoom.counter--
         } else if (currentRoom.counter <= 0) {
             getReadyTimer.stop()
-            console.log('switch to gamePlay')
             io.in(gameId).emit('switchMode')
             currentRoom.counter = gameSeconds
-            gamePlayTimer.start() 
-        }
-    }) 
-     
-    const gamePlayTimer = new CronJob('*/1 * * * * *', () => {
-        if (currentRoom.counter > 0) {
             io.in(gameId).emit('timerDecrement', { seconds: currentRoom.counter })
             currentRoom.counter--
-        } else if (currentRoom.counter <=0) {
+            gamePlayTimer.start()
+        }
+    })
+
+    const gamePlayTimer = new CronJob('*/1 * * * * *', () => {
+        if (!getUsersInRoom(gameId)) {
+            return gamePlayTimer.stop()
+        } else if (currentRoom.counter > 0) {
+            io.in(gameId).emit('timerDecrement', { seconds: currentRoom.counter })
+            currentRoom.counter--
+        } else if (currentRoom.currentRound >= rounds) {
+            io.in(gameId).emit('gameOver')
             gamePlayTimer.stop()
-            currentRoom.currentRound ++  
+
+            const userList = currentRoom.users.map(user => user.username).join('#')
+
+            const songList = currentRoom.gameObjs.map(round => round.song.name).join('#')
+
+            const winner = calculateWinner(currentRoom.users)
+            try {
+                axios.put(`http://localhost:4000/api/game/updateGame`, { gameId, userList, songList, winner })
+            } catch (err) {
+                console.log(err)
+            }
+            return 
+
+        }  else if (currentRoom.counter <= 0) {
+            gamePlayTimer.stop()
+            currentRoom.currentRound++
             currentRoom.counter = getReadySeconds
-            console.log('switch to getReady')
             io.in(gameId).emit('switchMode', {})
             io.in(gameId).emit('nextRound')
+            io.in(gameId).emit('timerDecrement', { seconds: currentRoom.counter })
+            currentRoom.counter--
             getReadyTimer.start()
         }
     })
-    getReadyTimer.start() 
+    getReadyTimer.start()
 
+}
+
+const changeScore = ({ gameId, socketId, correctSong, date }) => {
+
+    const users = getUsersInRoom(gameId)
+
+    const user = users.find(user => user.socketId === socketId)
+
+    if (!user.score.includes(correctSong)) {
+        user.score.push({ correctSong, date })
+    }
 }
 
 //room functions
@@ -64,7 +104,7 @@ const getRoom = (gameId) => {
     return rooms.find(item => item.gameId === gameId)
 }
 
-const addRoom = async ({ username, gameId, playlistName, playlistId, spotifyId }, socketId) => {
+const addRoom = async ({ username, gameId, playlistName, playlistId, spotifyId }, socketId, io) => {
 
     const { data } = await axios.post('http://localhost:4000/api/spotify/getPlaylistItems', { spotifyId })
         .catch(err => console.log(err))
@@ -85,9 +125,11 @@ const addRoom = async ({ username, gameId, playlistName, playlistId, spotifyId }
 
         gameSongs.forEach(song => {
             const dummyArray = []
+            song.correct = true
             for (let i = 0; i < dummySongs; i++) {
                 dummyArray.push(getRandomSong(songsArrayCopy)[0])
             }
+            dummyArray.forEach(item => item.correct = false)
             gameObjs.push({ song, dummyArray })
         })
 
@@ -96,7 +138,7 @@ const addRoom = async ({ username, gameId, playlistName, playlistId, spotifyId }
 
     rooms.push({
         gameId,
-        users: [{ username, socketId }],
+        users: [{ username, socketId, score: [] }],
         playlistName,
         playlistId,
         spotifyId,
@@ -105,6 +147,8 @@ const addRoom = async ({ username, gameId, playlistName, playlistId, spotifyId }
         currentRound: 1,
         counter: 0
     })
+
+    io.in(gameId).emit('sendSongs', { currentSongObj: getRoom(gameId).gameObjs })
 }
 
 const removeRoom = ({ gameId }) => {
@@ -114,31 +158,37 @@ const removeRoom = ({ gameId }) => {
 
 //user functions
 
-const addUser = ({ gameId, username, socketId }) => {
+const addUser = ({ gameId, username, socketId }, io) => {
+    const currentRoom = getRoom(gameId)
     const users = rooms.find(item => item.gameId === gameId).users
 
-    users.push({ username, socketId })
+    users.push({ username, socketId, score: [] })
+
+    io.in(gameId).emit('sendSongs', { currentSongObj: currentRoom.gameObjs })
 }
 
 const removeUser = ({ gameId, socketId }) => {
-    const users = rooms.find(item => item.gameId === gameId).users
+    try {
+        const users = rooms.find(item => item.gameId === gameId).users
 
 
-    const index = users.findIndex(user => user.socketId === socketId)
+        const index = users.findIndex(user => user.socketId === socketId)
 
-    if (index !== -1) {
-        return users.splice(index, 1)[0]
+        if (index !== -1) {
+            return users.splice(index, 1)[0]
+        }
+    } catch {
+        console.log('room already closed')
     }
 }
-
-
 
 const getUsersInRoom = (gameId) => {
-    const users = rooms.find(item => item.gameId === gameId).users
-    if (users) {
-        return users
+    try {
+        return rooms.find(item => item.gameId === gameId).users
+    } catch {
+        return false
     }
 }
 
 
-module.exports = { getRoom, addRoom, removeRoom, addUser, removeUser, getUsersInRoom, getGameData, runGame }
+module.exports = { getRoom, addRoom, removeRoom, addUser, removeUser, getUsersInRoom, getGameData, runGame, changeScore }

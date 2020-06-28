@@ -1,0 +1,34 @@
+.socket-game-outer-container {
+    @include outer-container;
+}
+
+.socket-game-inner-container {
+    @include centered;
+    height: 90%;
+}
+
+.game-card {
+    @include flex(row);
+    width: 300px;
+
+    margin: 30px;
+
+    .game-card-image {
+        width: 150px;
+    }
+    .game-card-info {
+
+    }
+}
+
+.game-card-playing {
+    cursor: pointer;
+}
+
+.correct {
+    border: 5px solid green;
+}
+
+.wrong {
+    border: 5px solid red;
+}
