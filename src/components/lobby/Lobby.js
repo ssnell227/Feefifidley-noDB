@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import io from 'socket.io-client'
 import SocketGame from '../game/SocketGame'
 import { connect } from 'react-redux'
+import {Link} from 'react-router-dom'
+
 
 import crownIcon from '../../images/crown-icon.svg'
 
@@ -14,6 +16,7 @@ const Lobby = (props) => {
     const [gameState, setGameState] = useState('lobby')
     const [currentSongObj, setCurrentSongObj] = useState({})
     const [gameOver, setGameOver] = useState(false)
+    const [playAgainState, setPlayAgainState] = useState({})
 
     const startGame = () => {
         socket.emit('startGame')
@@ -32,21 +35,6 @@ const Lobby = (props) => {
             spotifyId: currentPlaylist.spotifyId
         }, (err) => console.log(err))
 
-
-        return () => {
-            socket.emit('leaveRoom', { gameId: currentRoom, username: props.auth.username, socketId: socket.id })
-            socket.off()
-        }
-    }, [endpoint])
-
-    useEffect(() => {
-        socket.on('sendSongs', (sentSongs) => {
-            setCurrentSongObj(sentSongs.currentSongObj)
-        })
-
-    }, [currentSongObj])
-
-    useEffect(() => {
         socket.on('roomData', ({ users }) => {
             try {
                 const sortedUsers = users.map(user => {
@@ -67,8 +55,25 @@ const Lobby = (props) => {
         socket.on('gameInProgress', () => {
             setGameState('inProgress')
         })
-    }, [])
+        socket.on('tooManyPlayers', () => {
+            setGameState('tooManyPlayers')
+        })
+        socket.on('playAgain', () => {
 
+        })
+
+        return () => {
+            socket.emit('leaveRoom', { gameId: currentRoom, username: props.auth.username, socketId: socket.id })
+            socket.off()
+        }
+    }, [endpoint])
+
+    useEffect(() => {
+        socket.on('sendSongs', (sentSongs) => {
+            setCurrentSongObj(sentSongs.currentSongObj)
+        })
+
+    }, [currentSongObj])
 
     const usersMap = users.map((user, index) => {
         if (gameState === 'game' && index === 0) {
@@ -98,12 +103,13 @@ const Lobby = (props) => {
                     {gameOver &&
                         <div>
                             <p>Winner: {users[0].username}</p>
-                            <button>Play again?</button>
+                            <button onClick={() => props.history.push('/dashboard')} >Dashboard</button>
                         </div>
                     }
                 </div>
                 {gameState === 'game' && <SocketGame users={users} gameInfo={{ socketId: socket.id, gameId: props.game.currentRoom }} currentSongObj={currentSongObj} socket={socket} />}
                 {gameState === 'inProgress' && <h1>Sorry, this game has already started!</h1>}
+                {gameState === 'tooManyPlayers' && <h1>Sorry, this game is full!</h1>}
             </div>
         </div>
     )

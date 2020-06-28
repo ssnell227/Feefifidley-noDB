@@ -3,11 +3,9 @@ import axios from 'axios'
 import { connect } from 'react-redux'
 import { setCurrentPlaylist, setCurrentRoom, setPlaylists } from '../../redux/reducers/gameReducer'
 
+
 const Dashboard = (props) => {
     const [joinGameInput, setJoinGameInput] = useState([])
-
-
-    
 
     const newGame = async (e) => {
         const { name, id, spotifyid } = e.target.dataset
@@ -53,9 +51,7 @@ const Dashboard = (props) => {
                     <input onChange={(e) => setJoinGameInput(e.target.value)}/>
                     <button onClick={() => joinGame()}>Join</button>
                 </div>
-                <div className='high-scores-container'>
-                    <h2>Your high scores</h2>
-                </div>
+                
             </div>
         </div>
     )

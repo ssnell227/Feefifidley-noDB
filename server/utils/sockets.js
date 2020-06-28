@@ -6,17 +6,16 @@ module.exports = function (io) {
         socket.on('join', (userObj, cb) => {
             const { username, gameId, playlistName, playlistId, spotifyId} = userObj
             socket.join(gameId)
-
-
-
             
             //if room exists, add user to room, else, create room
-            if (getRoom(gameId) && !getRoom(gameId).playing) {
+            if (getRoom(gameId) && getUsersInRoom(gameId).length >=4) {
+                io.to(socket.id).emit('tooManyPlayers')
+            } else if (getRoom(gameId) && !getRoom(gameId).playing) {
                 addUser({gameId, username, socketId: socket.id}, io)
                 io.in(gameId).emit('roomData', {users: getUsersInRoom(gameId)})
-            } else if(getRoom(gameId) && getRoom(gameId).playing) {
+            } else if(getRoom(gameId) && getRoom(gameId).playing ) {
                 io.to(socket.id).emit('gameInProgress')
-            }else {
+            } else {
                 addRoom(userObj, socket.id, io).then(() => io.in(gameId).emit('roomData', {users: getUsersInRoom(gameId)}))
             }
 

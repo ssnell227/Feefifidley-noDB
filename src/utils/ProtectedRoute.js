@@ -14,7 +14,6 @@ const ProtectedRoute = ({exact = false, path, component, admin}) => {
         return true
     }
 
-
     return (
         <>
     {isAuthenticated && checkAdmin(admin) ? (

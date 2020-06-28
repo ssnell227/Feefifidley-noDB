@@ -2,6 +2,13 @@
     @include outer-container;
 }
 
+.dashboard-inner-container {
+  @include inner-container;
+
+  width: 100px;
+  height:100px;
+}
+
 .playlist-map-container {
     @include flex(row);
     @include centered;
@@ -11,6 +18,7 @@
 
 .playlist-card {
     @include flex (row);
+    @include inner-container;
     width: 300px;
     height: 200px;
 

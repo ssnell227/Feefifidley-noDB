@@ -1,8 +1,8 @@
 
 const initialState = {
     //default names for dev
-    username: 'firstUser',
-    userId: 1,
+    username: '',
+    userId: null,
     isAdmin: null,
     isAuthenticated: false
 }
