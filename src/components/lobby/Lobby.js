@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import io from 'socket.io-client'
 import SocketGame from '../game/SocketGame'
 import { connect } from 'react-redux'
-import {Link} from 'react-router-dom'
 
 
 import crownIcon from '../../images/crown-icon.svg'
@@ -16,7 +15,6 @@ const Lobby = (props) => {
     const [gameState, setGameState] = useState('lobby')
     const [currentSongObj, setCurrentSongObj] = useState({})
     const [gameOver, setGameOver] = useState(false)
-    const [playAgainState, setPlayAgainState] = useState({})
 
     const startGame = () => {
         socket.emit('startGame')
@@ -78,14 +76,14 @@ const Lobby = (props) => {
     const usersMap = users.map((user, index) => {
         if (gameState === 'game' && index === 0) {
             return (
-                <div key={index}>
+                <div className='user-container' key={index}>
                     <p >{user.username}</p>
                     <img className='leader-icon' src={crownIcon} alt='leader!' />
                 </div>
             )
         } else {
             return (
-                <div key={index}>
+                <div className='user-container' key={index}>
                     <p >{user.username}</p>
                 </div>
             )
@@ -95,21 +93,30 @@ const Lobby = (props) => {
     return (
         <div className='lobby-outer-container'>
             <div className='lobby-inner-container'>
-                <p>{props.game.currentPlaylist.playlistName}</p>
-                {gameState === 'lobby' && <button onClick={() => startGame()}>Start game</button>}
-                <div>
-                    <h2>Users</h2>
-                    {usersMap}
-                    {gameOver &&
-                        <div>
-                            <p>Winner: {users[0].username}</p>
-                            <button onClick={() => props.history.push('/dashboard')} >Dashboard</button>
+                <div className='side-bar-left'>
+                    <div className='playlist-info'>
+                        <h2 className='side-bar-title'>Playlist</h2>
+                        <img src={props.game.currentPlaylist.playlistImg} alt='playlist' />
+                        <p>{props.game.currentPlaylist.playlistName}</p>
+                    </div>
+                    {gameState === 'lobby' && <button className='button game-start' onClick={() => startGame()}>Start game</button>}
+                    <div className='users-container'>
+                        <h2 className='side-bar-title'>Users</h2>
+                        <div className='users-map-container'>
+                            {usersMap}
                         </div>
-                    }
+                    </div>
                 </div>
+                {gameOver &&
+                    <div className='game-over-container'>
+                        <p>And the winner is: </p>
+                        <p>{users[0].username}!</p>
+                        <button className='button'onClick={() => props.history.push('/dashboard')} >Dashboard</button>
+                    </div>
+                }
                 {gameState === 'game' && <SocketGame users={users} gameInfo={{ socketId: socket.id, gameId: props.game.currentRoom }} currentSongObj={currentSongObj} socket={socket} />}
-                {gameState === 'inProgress' && <h1>Sorry, this game has already started!</h1>}
-                {gameState === 'tooManyPlayers' && <h1>Sorry, this game is full!</h1>}
+                {gameState === 'inProgress' && <h1 className='problem-message'>Sorry, this game has already started!</h1>}
+                {gameState === 'tooManyPlayers' && <h1 className='problem-message'>Sorry, this game is full!</h1>}
             </div>
         </div>
     )

@@ -57,6 +57,7 @@ const Auth = (props) => {
         <div className='auth-outer-container'>
             <div className='auth-inner-container'>
                 <h1>FeeFiFidley.io!</h1>
+                <p>A multiplayer music guessing game powered by the Spotify API</p>
                 <form className='auth-form'>
                     <label>Username: <input onChange={(e) => setUsername(e.target.value)} /></label>
                     <label>Password: <input type='password' onChange={(e) => setPassword(e.target.value)} /></label>

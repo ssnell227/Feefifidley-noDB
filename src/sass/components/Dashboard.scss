@@ -1,36 +1,48 @@
 .dashboard-outer-container {
     @include outer-container;
-}
-
-.dashboard-inner-container {
-  @include inner-container;
-
-  width: 100px;
-  height:100px;
-}
-
-.playlist-map-container {
-    @include flex(row);
-    @include centered;
-    flex-wrap: wrap;
-    width: 70%;
-}
-
-.playlist-card {
-    @include flex (row);
-    @include inner-container;
-    width: 300px;
-    height: 200px;
-
-    img {
-        height: 90%;
-        cursor: pointer;
-        border-radius: 50%;
-    }
-}
-
-.high-scores-container {
-    @include flex(column);
-    position: absolute;
-    top: 50%;
+    background-color: white;
+    
+        .dashboard-inner-container {
+          @include card(rgba($primary, .2),  rgba(black, .2));
+        
+          width: 90%;
+          height: fit-content;
+        
+          margin: 100px auto;
+          padding: 20px 0px;
+        
+          .game-title {
+              font-size: 40px;
+              text-align: center;
+              margin: 50px;
+              font-family: $title-font;
+          }
+          
+          .playlist-map-container {
+              @include flex(row);
+              margin: auto;
+              flex-wrap: wrap;
+              width: 70%;
+        
+              .playlist-card {
+                  @include playlist;
+              }
+             }
+        
+          .join-game-container {
+              @include flex(row);
+              margin: auto;
+              text-align: center;
+              @include card(white, $primary);
+              width: 600px;
+              height: 100px;
+        
+              input {
+                  font-size: 30px;
+              }
+              button {
+                  font-size: 30px;
+              }
+          }
+        }
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import axios from 'axios'
-import {setPlaylists} from '../../redux/reducers/gameReducer'
+import { setPlaylists } from '../../redux/reducers/gameReducer'
 
 const Admin = (props) => {
     const [searchInput, setSearchInput] = useState('')
@@ -35,8 +35,10 @@ const Admin = (props) => {
 
     const playlistMap = props.game.playlists.map(item => <div className='playlist-card' key={item.id}>
         <img data-name={item.playlist_name} data-id={item.id} src={item.img_url} alt='playlist' />
-        <p>{item.playlist_name}</p>
-        <button onClick={() => removePlaylist(item.id)}>Delete</button>
+        <div className='right-side-container'>
+            <p>{item.playlist_name}</p>
+            <button className='button' onClick={() => removePlaylist(item.id)}>Delete</button>
+        </div>
     </div>)
 
     const searchMap = searchPlaylists.map(item => <div className='playlist-card' key={item.spotify_id}>
@@ -47,9 +49,11 @@ const Admin = (props) => {
     return (
         <div className='admin-outer-container'>
             <div className='admin-inner-container'>
+                <h2 className='admin-title'>Current playlists:</h2>
                 <div className='saved-playlist-container'>
                     {playlistMap}
                 </div>
+                <h2 className='admin-title'>Add a playlist:</h2>
                 <input onChange={(e) => playlistSearch(e)} placeholder='search for a playlist' />
                 <div className='search-playlist-container'>
                     {searchMap}
@@ -61,4 +65,4 @@ const Admin = (props) => {
 
 const mapStateToProps = (reduxState) => reduxState
 
-export default connect(mapStateToProps, {setPlaylists})(Admin)
+export default connect(mapStateToProps, { setPlaylists })(Admin)

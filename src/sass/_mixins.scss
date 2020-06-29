@@ -11,10 +11,25 @@
     height: 100%;
 }
 
-@mixin inner-container {
-    background-color: white;
+@mixin card ($colorA, $colorB) {
+    background-color: $colorA;
     border-radius: 20px;
-    box-shadow: 0px 10px 10px rgba($primary, 0.5)
+    box-shadow: 0px 10px 10px $colorB;
+}
+
+@mixin playlist {
+    @include flex (row);
+    @include card (white, $primary);
+    width: 300px;
+    height: 200px;
+        
+    margin: 10px;
+              
+    img {
+        height: 90%;
+        cursor: pointer;
+        border-radius: 50%;
+    }
 }
 
 @mixin flex ($flex-direction) {

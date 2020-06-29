@@ -1,12 +1,99 @@
 .lobby-outer-container {
     @include outer-container;
+    background-color: white;
+
+    
+    .lobby-inner-container {
+        position: relative;
+        @include card(rgba($primary, .2), rgba(black, .2));
+        margin: auto;
+        height: 90%;
+        width: 90%;
+        
+        margin: 100px auto;
+        padding: 20px 0px;
+        
+        .side-bar-left {
+            @include flex(column);
+            @include card(rgba($secondary, .2), $primary);
+
+            width: 300px;
+            height: 90%;
+            margin: 20px;
+            padding: 20px 0px;
+
+            .playlist-info {
+                @include card(white, $secondary);
+                @include flex(column);
+                width: 250px;
+
+                img {
+                    width: 90%;
+                    cursor: pointer;
+                    border-radius: 50%;
+                }
+                .side-bar-title {
+                    font-size: 30px;
+                    margin: 10px;
+                    padding: 10px;
+                }
+
+            }
+
+            .game-start {
+                @include centered;
+                font-size: 50px;
+            }
+
+            .users-container {
+                @include card(white, $secondary);
+                width: 250px;
+                height: 300px;
+
+                text-align: center;
+
+                .side-bar-title {
+                    font-size: 30px;
+                    margin: 10px;
+                    padding: 10px;
+                }
+
+                .users-map-container{
+                    .user-container {
+                        @include flex(row);
+                        font-size: 20px;
+                        .leader-icon {
+                            width: 15px;
+                        }
+                    }
+                }
+            }
+        }
+
+        .game-over-container {
+            @include flex(column);
+
+            height: 300px;
+
+            position: absolute;
+            right: 15%;
+            top: 30%;
+            margin: auto;
+
+            z-index: 10;
+
+            p {
+                font-size: 80px;
+            }
+        }
+
+        .problem-message {
+            position: absolute;
+            right: 15%;
+            top: 30%;
+            font-size: 50px;
+            margin: auto;
+        }
+    }
 }
 
-.lobby-inner-container {
-    @include centered;
-    height: 90%;
-}
-
-.leader-icon {
-    width: 20px;
-}

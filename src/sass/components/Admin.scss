@@ -1,6 +1,42 @@
-.saved-playlist-container,
-.search-playlist-container {
-    @include flex(row);
-    flex-wrap: wrap;
-    width: 70%;
+.admin-outer-container {
+    @include outer-container;
+    background-color: white;
+
+    .admin-inner-container {
+        @include card(rgba($primary, .2), rgba(black, .2));
+
+        width: 90%;
+          height: fit-content;
+        
+          margin: 100px auto;
+          padding: 20px 0px;
+
+          text-align: center;
+
+        .admin-title {
+            font-size: 50px;
+            margin: 20px;
+        }
+
+        .saved-playlist-container,
+        .search-playlist-container {
+            @include flex(row);
+            flex-wrap: wrap;
+            width: 70%;
+
+            margin: auto;
+
+            .playlist-card{
+                @include playlist;
+                
+                .right-side-container {
+                    @include flex(column)
+                }
+            }
+        }
+
+        input {
+            font-size: 30px;
+        }
+    }
 }

@@ -2,23 +2,28 @@
 
 .auth-outer-container {
     @include outer-container;
-}
+    
+    .auth-inner-container {
+        @include centered;
+        @include card(white, rgba($primary, .5));
+        @include flex(column);
+        width: 400px;
+        height: 600px;
+        text-align: center;
+    
+        h1 {
+            font-family: $title-font;
+            font-size: 50px;
+        }
 
-.auth-inner-container {
-    @include centered;
-    @include inner-container;
-    @include flex(column);
-    width: 400px;
-    height: 600px;
-    text-align: center;
-
-    h1 {
-        font-family: $title-font;
-        font-size: 50px;
+        p {
+            width: 70%;
+            line-height: 20px;
+        }
+        
+        .auth-form {
+            @include flex(column);
+            height: 30%;
+        }
     }
-}
-
-.auth-form {
-    @include flex(column);
-    height: 30%;
 }

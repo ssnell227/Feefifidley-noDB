@@ -1,8 +1,56 @@
 .game-outer-container {
     @include outer-container;
-}
+    position: absolute;
+    right: 5%;
+    top: 0px;
+    width: 70%;
 
-.game-inner-container {
-    @include centered;
-    height: 90%;
+    .game-inner-container {
+        
+        height: 100%;
+        width: 100%;
+
+        .game-info-container {
+            @include flex(column);
+
+            height: 90%;
+            margin: 20px;
+
+            justify-content: space-around;
+
+            h2 {
+                font-size: 30px;
+            }
+
+            .timer{
+                font-size: 60px;
+            }
+
+            .game-songs-container {
+                margin: auto;
+                width: 90%;
+                height: 90%;
+                display: grid;
+                grid-template: 30% 30% / 30% 30%;
+                justify-content: space-around;
+                align-content: space-around;
+
+                .game-card {
+                    @include playlist;
+                    
+                    .game-card-info {
+                        @include flex (column);
+                        height: 60%;
+
+                        .song-name {
+                            font-weight: bold;
+                        }
+                    }
+                }
+                .correct {
+                    background-color: rgba($tertiary, .2)
+                }
+            }
+        }
+    }
 }

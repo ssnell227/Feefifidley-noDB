@@ -41,12 +41,12 @@ const SocketGame = (props) => {
     }, [round])
 
     const clickAnswer = (e) => {
-        const correctSong = props.currentSongObj[round-1].song.name
+        const correctSong = props.currentSongObj[round - 1].song.name
 
         setGuessed(true)
 
-        if (e.target.dataset.name === correctSong  && !guessed) {
-            props.socket.emit('changeScore', {gameId: props.gameInfo.gameId, socketId: props.gameInfo.socketId, correctSong, date: Date.now()})
+        if (e.target.dataset.name === correctSong && !guessed) {
+            props.socket.emit('changeScore', { gameId: props.gameInfo.gameId, socketId: props.gameInfo.socketId, correctSong, date: Date.now() })
         }
     }
 
@@ -66,10 +66,11 @@ const SocketGame = (props) => {
 
     const songsMap = songSet.map((item, index) => {
         return (
-            <div  className={`game-card game-card-playing ${guessed &&item.correct && 'correct'} ${guessed && !item.correct && 'wrong'}`} key={`${item.name}-${index}`}>
-                <img  onClick={(e) => clickAnswer(e)} data-name={item.name} className='game-card-image' src={item.album.images[0].url} alt='album-art'/>
+            <div className={`game-card game-card-playing ${guessed && item.correct && 'correct'}`} key={`${item.name}-${index}`}>
+                <img onClick={(e) => clickAnswer(e)} data-name={item.name} className='game-card-image' src={item.album.images[0].url} alt='album-art' />
                 <div className='game-card-info'>
-                    <p>{item.name}</p>
+                    <p className='song-name'>{item.name}</p>
+                    <p>- - -</p>
                     <p>{item.artists[0].name}</p>
                 </div>
             </div>
@@ -81,35 +82,32 @@ const SocketGame = (props) => {
             <div className='game-card' key={index}>
                 <img className='game-card-image' src={blankArtistImage} />
                 <div className='game-card-info'>
-                    <p>Track name</p>
+                    <p className='song-name'>Track name</p>
+                    <p>- - -</p>
                     <p>Artist</p>
                 </div>
             </div>
         )
     })
 
-    
+
 
 
     return (
         <div className='game-outer-container'>
             <div className='game-inner-container'>
                 {!gameState && !gameOver &&
-                    <div>
-                        Get Ready!
-                        <div>
-                            <p>{timerSeconds}</p>
-                        </div>
+                    <div className='game-info-container'>
+                        <h2>Get Ready!</h2>
+                        <p className='timer'>{timerSeconds}</p>
                         <div className='game-songs-container'>
                             {blankMap}
                         </div>
                     </div>
                 }
                 {gameState && !gameOver &&
-                    <div>
-                        <div>
-                            <p>{timerSeconds}</p>
-                        </div>
+                    <div className='game-info-container'>
+                        <p className='timer'> {timerSeconds}</p>
                         <div>
                             <audio autoPlay src={props.currentSongObj[round - 1].song.preview_url} />
                         </div>
@@ -118,7 +116,7 @@ const SocketGame = (props) => {
                         </div>
                     </div>
                 }
-                
+
             </div>
         </div>
     )
