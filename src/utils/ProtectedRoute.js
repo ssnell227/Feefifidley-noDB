@@ -3,9 +3,9 @@ import {Redirect, Route, useLocation} from 'react-router-dom'
 import {useSelector} from 'react-redux'
 
 const ProtectedRoute = ({exact = false, path, component, admin}) => {
-    const {isAuthenticated, isAdmin} = useSelector((reduxState) => reduxState.auth)
-    
     const location = useLocation()
+    
+    const {isAuthenticated, isAdmin} = useSelector((reduxState) => reduxState.auth)
 
     const checkAdmin = (adminProp) => {
         if (adminProp) {

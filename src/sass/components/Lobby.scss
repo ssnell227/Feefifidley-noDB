@@ -94,6 +94,16 @@
             font-size: 50px;
             margin: auto;
         }
+
+        @include breakPoint(desktop-min) {
+            
+        }
+        @include breakPoint(tablet-min) {
+
+        }
+        @include breakPoint(mobile-max) {
+
+        }
     }
 }
 

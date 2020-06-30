@@ -50,12 +50,7 @@ const Lobby = (props) => {
         socket.on('gameOver', () => {
             setGameOver(true)
         })
-        socket.on('gameInProgress', () => {
-            setGameState('inProgress')
-        })
-        socket.on('tooManyPlayers', () => {
-            setGameState('tooManyPlayers')
-        })
+
         socket.on('playAgain', () => {
 
         })
@@ -65,6 +60,22 @@ const Lobby = (props) => {
             socket.off()
         }
     }, [endpoint])
+
+    useEffect(() => {
+        let redirectTimer
+
+        socket.on('gameInProgress', () => {
+            setGameState('inProgress')
+             redirectTimer = setTimeout(() => props.history.push('/dashboard'), 2000)
+        })
+        socket.on('tooManyPlayers', () => {
+            setGameState('tooManyPlayers')
+            redirectTimer = setTimeout(() => props.history.push('/dashboard'), 2000)
+        })
+
+        return clearTimeout(redirectTimer)
+
+    }, [])
 
     useEffect(() => {
         socket.on('sendSongs', (sentSongs) => {
@@ -99,7 +110,12 @@ const Lobby = (props) => {
                         <img src={props.game.currentPlaylist.playlistImg} alt='playlist' />
                         <p>{props.game.currentPlaylist.playlistName}</p>
                     </div>
-                    {gameState === 'lobby' && <button className='button game-start' onClick={() => startGame()}>Start game</button>}
+                    {gameState === 'lobby' &&
+                    <div className='game-start'>
+                     <button className='button' onClick={() => startGame()}>Start game</button>
+                    <h1>Game number: {props.game.currentRoom}</h1>
+                     </div>
+                     }
                     <div className='users-container'>
                         <h2 className='side-bar-title'>Users</h2>
                         <div className='users-map-container'>
@@ -111,7 +127,7 @@ const Lobby = (props) => {
                     <div className='game-over-container'>
                         <p>And the winner is: </p>
                         <p>{users[0].username}!</p>
-                        <button className='button'onClick={() => props.history.push('/dashboard')} >Dashboard</button>
+                        <button className='button' onClick={() => props.history.push('/dashboard')} >Dashboard</button>
                     </div>
                 }
                 {gameState === 'game' && <SocketGame users={users} gameInfo={{ socketId: socket.id, gameId: props.game.currentRoom }} currentSongObj={currentSongObj} socket={socket} />}

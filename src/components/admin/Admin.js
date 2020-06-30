@@ -16,11 +16,13 @@ const Admin = (props) => {
     const playlistSearch = async (e) => {
         setSearchInput(e.target.value)
 
-        const formattedQuery = searchInput.replace(' ', '+')
+        if (searchInput.length > 1) {
+            const formattedQuery = searchInput.replace(' ', '+')
 
-        const searchObjects = await axios.post('/api/spotify/playlistSearch', { formattedQuery })
+            const searchObjects = await axios.post('/api/spotify/playlistSearch', { formattedQuery })
 
-        searchInput !== '' ? setSearchPlaylists(await searchObjects.data) : setSearchPlaylists([])
+            searchInput !== '' ? setSearchPlaylists(await searchObjects.data) : setSearchPlaylists([])
+        }
     }
 
     const addPlaylist = async (playlistName, spotifyId, imgURL) => {

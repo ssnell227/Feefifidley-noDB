@@ -44,5 +44,25 @@
                   font-size: 30px;
               }
           }
+
+        @include breakPoint(tablet-max) {
+            .join-game-container {
+                @include flex(column);
+                max-width: 600px;
+                width: 70%;
+                height: 125px;
+                input {
+                    margin: 10px 0px;
+                    width: 80%;
+                    font-size: 30px;
+                }
+                button {
+                    font-size: 30px;
+                }
+            }
         }
+        @include breakPoint(mobile-max) {
+
+        }
+    }
 }

@@ -46,7 +46,7 @@ const Dashboard = (props) => {
             <div className='dashboard-inner-container'>
                     <h2 className='game-title'>Join someone's game:</h2>
                 <div className='join-game-container'>
-                    <input onChange={(e) => setJoinGameInput(e.target.value)} />
+                    <input placeholder='Game number' onChange={(e) => setJoinGameInput(e.target.value)} />
                     <button className='button' onClick={() => joinGame()}>Join</button>
                 </div>
                 <h2 className='game-title'>Click a playlist to start a new game:</h2>

@@ -18,12 +18,59 @@
 
         p {
             width: 70%;
-            line-height: 20px;
+            font-size: 20px;
+            line-height: 25px;
         }
         
         .auth-form {
             @include flex(column);
             height: 30%;
+        }
+
+        
+        @include breakPoint(tablet-max) {
+            .auth-form {
+                font-size: 25px;
+                label {
+                    margin: 10px;
+                }
+                input {
+                    font-size: 25px;
+                }
+                .auth-buttons {
+                    margin: 40px 0px;
+
+                    .button {
+                        font-size: 20px;
+                    }
+                }
+            }
+        }
+        @include breakPoint(mobile-max) {
+            width: 90%;
+            
+
+            h1 {
+                font-size: 40px;
+            }
+
+            .auth-form {
+                font-size: 25px;
+                label {
+                    margin: 10px;
+                }
+                input {
+                    width: 70%;
+                    font-size: 25px;
+                }
+                .auth-buttons {
+                    margin: 40px 0px;
+
+                    .button {
+                        font-size: 20px;
+                    }
+                }
+            }
         }
     }
 }

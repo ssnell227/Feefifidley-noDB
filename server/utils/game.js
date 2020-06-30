@@ -178,7 +178,7 @@ const removeUser = ({ gameId, socketId }) => {
             return users.splice(index, 1)[0]
         }
     } catch {
-        console.log('room already closed')
+        
     }
 }
 

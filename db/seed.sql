@@ -26,4 +26,5 @@ create table loaded_playlists (
     playlist_name varchar(200),
     spotify_id text
     img_url text
+    current bool
 );

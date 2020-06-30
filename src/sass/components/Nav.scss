@@ -27,5 +27,15 @@
                 text-decoration: none;
             }
         }
+
+        
+    }
+    @include breakPoint(desktop-min) {
+        height: 75px;
+        background-color: blue;
+    }
+    
+    @include breakPoint(mobile-max) {
+
     }
 }

@@ -1,6 +1,5 @@
 
 const initialState = {
-    //default names for dev
     username: '',
     userId: null,
     isAdmin: null,

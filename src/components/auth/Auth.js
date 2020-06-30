@@ -63,7 +63,7 @@ const Auth = (props) => {
                     <label>Password: <input type='password' onChange={(e) => setPassword(e.target.value)} /></label>
                     {incorrectInfo && <p>Incorrect username or password</p>}
                     <div className='auth-buttons'>
-                        <input className='button' onClick={login} type='submit' value='Log In' />
+                        <button className='button' onClick={login} type='submit' >Log in</button>
                         <button className='button' onClick={register}>Register</button>
                         <button className='button' onClick={continueAsGuest}>Continue as Guest</button>
                     </div>
