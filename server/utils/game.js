@@ -66,7 +66,7 @@ const runGame = async (io, gameId) => {
 
             const winner = calculateWinner(currentRoom.users)
             try {
-                axios.put(`http://localhost:4000/api/game/updateGame`, { gameId, userList, songList, winner })
+                axios.put(`http://157.245.230.35:4000/api/game/updateGame`, { gameId, userList, songList, winner })
             } catch (err) {
                 console.log(err)
             }
@@ -106,7 +106,7 @@ const getRoom = (gameId) => {
 
 const addRoom = async ({ username, gameId, playlistName, playlistId, spotifyId }, socketId, io) => {
 
-    const { data } = await axios.post('http://localhost:4000/api/spotify/getPlaylistItems', { spotifyId })
+    const { data } = await axios.post('http://157.245.230.35:4000/api/spotify/getPlaylistItems', { spotifyId })
         .catch(err => console.log(err))
 
     const withPreview = data.map(item => item.track).filter(item => item.preview_url)
