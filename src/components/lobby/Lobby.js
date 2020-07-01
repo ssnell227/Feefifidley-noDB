@@ -23,7 +23,7 @@ const Lobby = (props) => {
     useEffect(() => {
         const { currentRoom, currentPlaylist } = props.game
 
-        socket = io(endpoint)
+        socket = io()
 
         socket.emit('join', {
             username: props.auth.username,
