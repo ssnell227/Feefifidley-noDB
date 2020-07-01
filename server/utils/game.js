@@ -1,3 +1,5 @@
+require('dotenv').config()
+const {LOCAL_HOST, SERVER_PORT} = process.env
 const axios = require('axios')
 const CronJob = require('cron').CronJob
 
@@ -14,7 +16,7 @@ const getRandomSong = (tracksArray) => {
 }
 
 const getGameData = async () => {
-    const playlistItems = await axios.post('/api/spotify/getPlaylistItems',)
+    const playlistItems = await axios.post(`http://${LOCAL_HOST}:${SERVER_PORT}/api/spotify/getPlaylistItems`,)
 }
 
 const calculateWinner = (userArray) => {
@@ -64,7 +66,7 @@ const runGame = async (io, gameId) => {
 
             const winner = calculateWinner(currentRoom.users)
             try {
-                axios.put(`http://157.245.230.35:4000/api/game/updateGame`, { gameId, userList, songList, winner })
+                axios.put(`http://${LOCAL_HOST}:4000/api/game/updateGame`, { gameId, userList, songList, winner })
             } catch (err) {
                 console.log(err)
             }
@@ -104,7 +106,7 @@ const getRoom = (gameId) => {
 
 const addRoom = async ({ username, gameId, playlistName, playlistId, spotifyId }, socketId, io) => {
 
-    const { data } = await axios.post('http://157.245.230.35:4000/api/spotify/getPlaylistItems', { spotifyId })
+    const { data } = await axios.post(`http://${LOCAL_HOST}:${SERVER_PORT}/api/spotify/getPlaylistItems`, { spotifyId })
         .catch(err => console.log(err))
 
     const withPreview = data.map(item => item.track).filter(item => item.preview_url)

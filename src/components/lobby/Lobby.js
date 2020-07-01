@@ -6,7 +6,6 @@ import { connect } from 'react-redux'
 
 import crownIcon from '../../images/crown-icon.svg'
 
-const endpoint = '157.245.230.35'
 
 let socket;
 
