@@ -14,6 +14,7 @@ const Lobby = (props) => {
     const [gameState, setGameState] = useState('lobby')
     const [currentSongObj, setCurrentSongObj] = useState({})
     const [gameOver, setGameOver] = useState(false)
+    const [winner, setWinner] = useState('')
 
     const startGame = () => {
         socket.emit('startGame')
@@ -46,12 +47,10 @@ const Lobby = (props) => {
         socket.on('begin', () => {
             setGameState('game')
         })
-        socket.on('gameOver', () => {
+
+        socket.on('gameOver', ({winner}) => {
             setGameOver(true)
-        })
-
-        socket.on('playAgain', () => {
-
+            setWinner(winner)
         })
 
         return () => {
@@ -125,7 +124,7 @@ const Lobby = (props) => {
                 {gameOver &&
                     <div className='game-over-container'>
                         <img className='winner-icon-main' src={crownIcon} alt='winner symbol'/>
-                        <p>{users[0].username}</p>
+                        <p>{winner}</p>
                         <button className='button' onClick={() => props.history.push('/dashboard')} >Dashboard</button>
                     </div>
                 }

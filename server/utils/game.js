@@ -57,16 +57,16 @@ const runGame = async (io, gameId) => {
             io.in(gameId).emit('timerDecrement', { seconds: currentRoom.counter })
             currentRoom.counter--
         } else if (currentRoom.currentRound >= rounds) {
-            io.in(gameId).emit('gameOver')
             gamePlayTimer.stop()
-
+            
             const userList = currentRoom.users.map(user => user.username).join('#')
-
+            
             const songList = currentRoom.gameObjs.map(round => round.song.name).join('#')
-
+            
             const winner = calculateWinner(currentRoom.users)
+            io.in(gameId).emit('gameOver', {winner})
             try {
-                axios.put(`http://${LOCAL_HOST}:4000/api/game/updateGame`, { gameId, userList, songList, winner })
+                axios.put(`http://${LOCAL_HOST}:${SERVER_PORT}/api/game/updateGame`, { gameId, userList, songList, winner })
             } catch (err) {
                 console.log(err)
             }
