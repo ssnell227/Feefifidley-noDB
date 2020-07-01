@@ -65,7 +65,7 @@ const Lobby = (props) => {
 
         socket.on('gameInProgress', () => {
             setGameState('inProgress')
-             redirectTimer = setTimeout(() => props.history.push('/dashboard'), 2000)
+            redirectTimer = setTimeout(() => props.history.push('/dashboard'), 2000)
         })
         socket.on('tooManyPlayers', () => {
             setGameState('tooManyPlayers')
@@ -103,18 +103,12 @@ const Lobby = (props) => {
     return (
         <div className='lobby-outer-container'>
             <div className='lobby-inner-container'>
-                <div className='side-bar-left'>
-                    <div className='playlist-info'>
+                <div className={`side-bar-left ${gameState === 'game' && 'hidden'}`}>
+                    <div className={`playlist-info ${gameState === 'game' && 'hidden'}`}>
                         <h2 className='side-bar-title'>Playlist</h2>
                         <img src={props.game.currentPlaylist.playlistImg} alt='playlist' />
                         <p>{props.game.currentPlaylist.playlistName}</p>
                     </div>
-                    {gameState === 'lobby' &&
-                    <div className='game-start'>
-                     <button className='button' onClick={() => startGame()}>Start game</button>
-                    <h1>Game number: {props.game.currentRoom}</h1>
-                     </div>
-                     }
                     <div className='users-container'>
                         <h2 className='side-bar-title'>Users</h2>
                         <div className='users-map-container'>
@@ -122,10 +116,16 @@ const Lobby = (props) => {
                         </div>
                     </div>
                 </div>
+                    {gameState === 'lobby' &&
+                        <div className='game-start'>
+                            <button className='button' onClick={() => startGame()}>Start game</button>
+                            <h1>Game number: {props.game.currentRoom}</h1>
+                        </div>
+                    }
                 {gameOver &&
                     <div className='game-over-container'>
-                        <p>And the winner is: </p>
-                        <p>{users[0].username}!</p>
+                        <img className='winner-icon-main' src={crownIcon} alt='winner symbol'/>
+                        <p>{users[0].username}</p>
                         <button className='button' onClick={() => props.history.push('/dashboard')} >Dashboard</button>
                     </div>
                 }

@@ -53,14 +53,30 @@
             }
         }
 
-        @include breakPoint(desktop-min) {
-            
+        @include breakPoint(small-desktop-max) {
+            .game-info-container{
+                .game-songs-container {
+                    @include flex(column);
+                    .game-card {
+                        width: 210px;
+                        height: 140px;
+                    }
+                } 
         }
-        @include breakPoint(tablet-min) {
-
         }
-        @include breakPoint(mobile-max) {
-
+        
+        
+    }
+    @include breakPoint(tablet-max) {
+        top: 0px;
+        right:0px;
+        width:100%;
+        .game-inner-container {
+            .game-info-container {
+                .game-songs-container {
+                    align-items: flex-end;
+                } 
+            }
         }
     }
 }
