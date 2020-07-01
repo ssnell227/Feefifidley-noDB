@@ -5,10 +5,10 @@ const CronJob = require('cron').CronJob
 
 const rooms = []
 
-const rounds = 3;
+const rounds = 5;
 const dummySongs = 3
 const getReadySeconds = 3
-const gameSeconds = 10
+const gameSeconds = 5
 
 const getRandomSong = (tracksArray) => {
     let randomIndex = Math.floor(Math.random() * tracksArray.length - 1)
