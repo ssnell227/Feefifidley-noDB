@@ -68,13 +68,21 @@
         
     }
     @include breakPoint(tablet-max) {
-        top: 0px;
-        right:0px;
-        width:100%;
         .game-inner-container {
             .game-info-container {
                 .game-songs-container {
                     align-items: flex-end;
+                } 
+            }
+        }
+    }
+    @include breakPoint (tablet-min) {
+        position: relative;
+        margin: auto;
+        .game-inner-container {
+            .game-info-container {
+                .game-songs-container {
+                    align-items: center;
                 } 
             }
         }
