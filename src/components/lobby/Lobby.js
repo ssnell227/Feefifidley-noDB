@@ -59,7 +59,7 @@ const Lobby = (props) => {
             socket.emit('leaveRoom', { gameId: currentRoom, username: props.auth.username, socketId: socket.id })
             socket.off()
         }
-    }, [endpoint])
+    }, [props.game, props.auth.username])
 
     useEffect(() => {
         let redirectTimer
@@ -75,7 +75,7 @@ const Lobby = (props) => {
 
         return clearTimeout(redirectTimer)
 
-    }, [])
+    }, [props.history])
 
     useEffect(() => {
         socket.on('sendSongs', (sentSongs) => {

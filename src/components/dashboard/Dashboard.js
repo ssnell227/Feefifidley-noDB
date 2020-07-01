@@ -7,9 +7,11 @@ import { setCurrentPlaylist, setCurrentRoom, setPlaylists } from '../../redux/re
 const Dashboard = (props) => {
     const [joinGameInput, setJoinGameInput] = useState([])
 
+    const {setCurrentPlaylist, setCurrentRoom, setPlaylists} = props
+
     const newGame = async (e) => {
         const { name, id, spotifyid, img } = e.target.dataset
-        props.setCurrentPlaylist({
+        setCurrentPlaylist({
             playlistName: name,
             playlistId: id,
             spotifyId: spotifyid,
@@ -17,7 +19,7 @@ const Dashboard = (props) => {
         })
         const game = await axios.post('/api/game/newGame', { userId: props.auth.userId, playlist: name, playlist_id: id })
         const { game_id } = game.data
-        props.setCurrentRoom(game_id)
+        setCurrentRoom(game_id)
         props.history.push(`/game/${game_id}`)
     }
 
@@ -25,14 +27,14 @@ const Dashboard = (props) => {
         const { data } = await axios.get(`/api/game/${joinGameInput}`)
         const { game_id, playlist, playlist_id } = data
 
-        props.setCurrentRoom(game_id)
-        props.setCurrentPlaylist({ playlistName: playlist, playlistId: playlist_id })
+        setCurrentRoom(game_id)
+        setCurrentPlaylist({ playlistName: playlist, playlistId: playlist_id })
         props.history.push(`/game/${game_id}`)
     }
 
     useEffect(() => {
-        props.setPlaylists()
-    }, [props.game.playlistIds])
+        setPlaylists()
+    }, [props.game.playlistIds, setPlaylists])
 
     const playlistMap = props.game.playlists.map(item => <div className='playlist-card' key={item.id}>
         <img onClick={(e) => newGame(e)} data-name={item.playlist_name} data-id={item.id} data-img={item.img_url} data-spotifyid={item.spotify_id} src={item.img_url} alt='playlist' />

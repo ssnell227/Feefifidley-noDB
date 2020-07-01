@@ -30,8 +30,6 @@ const runGame = async (io, gameId) => {
     const currentRoom = getRoom(gameId)
     currentRoom.counter = getReadySeconds
 
-
-
     io.in(gameId).emit('nextRound')
 
     const getReadyTimer = new CronJob('*/1 * * * * *', () => {

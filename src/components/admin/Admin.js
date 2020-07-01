@@ -8,6 +8,8 @@ const Admin = (props) => {
     const [searchPlaylists, setSearchPlaylists] = useState([])
     const [rerenderSwitch, setRerenderSwitch] = useState(true)
 
+    const {setPlaylists} = props
+
     const removePlaylist = async (playlistId) => {
         await axios.delete(`/api/playlists/${playlistId}`)
         setRerenderSwitch(!rerenderSwitch)
@@ -31,8 +33,8 @@ const Admin = (props) => {
     }
 
     useEffect(() => {
-        props.setPlaylists()
-    }, [rerenderSwitch])
+        setPlaylists()
+    }, [setPlaylists])
 
 
     const playlistMap = props.game.playlists.map(item => <div className='playlist-card' key={item.id}>

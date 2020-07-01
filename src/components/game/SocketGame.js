@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 
 import blankArtistImage from '../../images/blank-artist-photo.png'
 
@@ -14,13 +13,13 @@ const SocketGame = (props) => {
 
     useEffect(() => {
         props.socket.on('timerDecrement', ({ seconds }) => {
-            setTimerSeconds(seconds)
+            setTimerSeconds(seconds, props.socket)
         })
 
         props.socket.on('gameOver', () => {
             setGameOver(true)
         })
-    }, [])
+    }, [props.socket])
 
     useEffect(() => {
 
@@ -28,7 +27,7 @@ const SocketGame = (props) => {
             setGameState(gameState === true ? false : true)
         })
 
-    }, [gameState])
+    }, [gameState, props.socket])
 
     useEffect(() => {
         props.socket.on('nextRound', () => {
@@ -38,7 +37,7 @@ const SocketGame = (props) => {
                 generateRandomOrdered()
             }
         })
-    }, [round])
+    }, [round, props.socket, props.currentSongObj])
 
     const clickAnswer = (e) => {
         const correctSong = props.currentSongObj[round - 1].song.name
@@ -80,7 +79,7 @@ const SocketGame = (props) => {
     const blankMap = songSet.map((item, index) => {
         return (
             <div className='game-card' key={index}>
-                <img className='game-card-image' src={blankArtistImage} />
+                <img alt='blank artist' className='game-card-image' src={blankArtistImage} />
                 <div className='game-card-info'>
                     <p className='song-name'>Track name</p>
                     <p>- - -</p>
