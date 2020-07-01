@@ -34,7 +34,7 @@ const Admin = (props) => {
 
     useEffect(() => {
         setPlaylists()
-    }, [setPlaylists])
+    }, [props.game.playlists, setPlaylists])
 
 
     const playlistMap = props.game.playlists.map(item => <div className='playlist-card' key={item.id}>
