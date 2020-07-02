@@ -5,7 +5,7 @@ const CronJob = require('cron').CronJob
 
 const rooms = []
 
-const rounds = 5;
+const rounds = 4;
 const dummySongs = 3
 const getReadySeconds = 3
 const gameSeconds = 5
