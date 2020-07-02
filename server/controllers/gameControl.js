@@ -42,5 +42,14 @@ module.exports = {
         if (game) {
             res.status(200).send(game)
         }
+    },
+    joinGameInfo: async (req, res) => {
+        const db = req.app.get('db')
+
+        const {gameId} = req.params
+
+        const [info] = await db.join_game_info(gameId)
+
+        res.status(200).send(info)
     }
 }

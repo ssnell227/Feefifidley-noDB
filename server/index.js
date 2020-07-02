@@ -63,6 +63,8 @@ app.get('/api/auth/session', authCtrl.getSessionUser)
 
 app.post('/api/game/newGame', gameCtrl.newGame)
 
+app.get('/api/game/joinGameInfo/:gameId', gameCtrl.joinGameInfo)
+
 app.put('/api/game/updateGame', gameCtrl.updateGame)
 
 app.get('/api/game/:gameId', gameCtrl.getGameById)

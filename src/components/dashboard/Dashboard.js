@@ -24,11 +24,11 @@ const Dashboard = (props) => {
     }
 
     const joinGame = async () => {
-        const { data } = await axios.get(`/api/game/${joinGameInput}`)
-        const { game_id, playlist, playlist_id } = data
+        const { data } = await axios.get(`/api/game/joinGameInfo/${joinGameInput}`)
+        const { game_id, playlist_name, id, img_url } = data
 
         setCurrentRoom(game_id)
-        setCurrentPlaylist({ playlistName: playlist, playlistId: playlist_id })
+        setCurrentPlaylist({ playlistName: playlist_name, playlistId: id, playlistImg: img_url })
         props.history.push(`/game/${game_id}`)
     }
 
