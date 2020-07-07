@@ -15,10 +15,6 @@ const getRandomSong = (tracksArray) => {
     return tracksArray.splice(randomIndex, 1)
 }
 
-const getGameData = async () => {
-    const playlistItems = await axios.post(`http://${LOCAL_HOST}:${SERVER_PORT}/api/spotify/getPlaylistItems`,)
-}
-
 const calculateWinner = (userArray) => {
     const winner = userArray.map(user => {
         const userScore = user.score.map(item => 1 + 1 / (item.date % 100000))
@@ -193,4 +189,4 @@ const getUsersInRoom = (gameId) => {
 }
 
 
-module.exports = { getRoom, addRoom, removeRoom, addUser, removeUser, getUsersInRoom, getGameData, runGame, changeScore }
+module.exports = { getRoom, addRoom, removeRoom, addUser, removeUser, getUsersInRoom, runGame, changeScore }

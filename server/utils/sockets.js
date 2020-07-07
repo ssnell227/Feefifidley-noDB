@@ -1,10 +1,10 @@
-const {addRoom, addUser, removeUser, getUsersInRoom, getGameData, getRoom, removeRoom, runGame, changeScore } = require('./game')
+const {addRoom, addUser, removeUser, getUsersInRoom, getRoom, removeRoom, runGame, changeScore } = require('./game')
 
 module.exports = function (io) {
     io.on('connection',  (socket) => {
 
-        socket.on('join', (userObj, cb) => {
-            const { username, gameId, playlistName, playlistId, spotifyId} = userObj
+        socket.on('join', (userObj) => {
+            const { username, gameId} = userObj
             socket.join(gameId)
             
             //if room exists, add user to room, else, create room
