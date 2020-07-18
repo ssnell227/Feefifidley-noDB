@@ -8,7 +8,7 @@ const rooms = []
 const rounds = 4;
 const dummySongs = 3
 const getReadySeconds = 3
-const gameSeconds = 5
+const gameSeconds = 10
 
 const getRandomSong = (tracksArray) => {
     let randomIndex = Math.floor(Math.random() * tracksArray.length - 1)
