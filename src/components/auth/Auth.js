@@ -8,6 +8,7 @@ const Auth = (props) => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [incorrectInfo, setIncorrectInfo] = useState(false)
+    const [addUsername, setAddUsername] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -50,7 +51,10 @@ const Auth = (props) => {
             const isAuthenticated = true
             dispatch(setUser(username,null, null, isAuthenticated))
             props.history.push('/dashboard')
+        }else {
+            setAddUsername(true)
         }
+        
     }
 
     return (
@@ -64,6 +68,7 @@ const Auth = (props) => {
                     <label>Username: <input onChange={(e) => setUsername(e.target.value)} /></label>
                     <label>Password: <input type='password' onChange={(e) => setPassword(e.target.value)} /></label>
                     {incorrectInfo && <p>Incorrect username or password</p>}
+                    {addUsername && <p>Enter a username</p>}
                     <div className='auth-buttons'>
                         <button className='button' onClick={login} type='submit' >Log in</button>
                         <button className='button' onClick={register}>Register</button>
