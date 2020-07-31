@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 import blankArtistImage from '../../images/blank-artist-photo.png'
 
@@ -11,6 +11,16 @@ const SocketGame = (props) => {
     const [songSet, setSongSet] = useState([])
     const [guessed, setGuessed] = useState(false)
 
+    const audioRef = useRef(null)
+
+    useEffect(() => {
+        if (gameState && !gameOver) {
+            audioRef.current.play()
+        } else {
+            audioRef.current.pause()
+        }
+    }, [gameState, gameOver])
+
     useEffect(() => {
         props.socket.on('timerDecrement', ({ seconds }) => {
             setTimerSeconds(seconds, props.socket)
@@ -19,6 +29,8 @@ const SocketGame = (props) => {
         props.socket.on('gameOver', () => {
             setGameOver(true)
         })
+
+        
     }, [props.socket])
 
     useEffect(() => {
@@ -33,6 +45,8 @@ const SocketGame = (props) => {
         props.socket.on('nextRound', () => {
             setRound(round + 1)
             setGuessed(false)
+            
+            console.log(round)
             if (round < props.currentSongObj.length) {
                 generateRandomOrdered()
             }
@@ -89,7 +103,7 @@ const SocketGame = (props) => {
         )
     })
 
-
+    
 
 
     return (
@@ -104,17 +118,17 @@ const SocketGame = (props) => {
                         </div>
                     </div>
                 }
-                {gameState && !gameOver &&
-                    <div className='game-info-container'>
+                
+                    <div className={`game-info-container ${gameState && !gameOver && 'display'}`}>
                         <p className='timer'> {timerSeconds}</p>
                         <div>
-                            <audio autoPlay preload='auto' src={props.currentSongObj[round - 1].song.preview_url} />
+                            <audio ref={audioRef} preload='auto' src={round-1 >= 0 && props.currentSongObj[round-1].song.preview_url} />
                         </div>
                         <div className='game-songs-container'>
                             {songsMap}
                         </div>
                     </div>
-                }
+                
 
             </div>
         </div>

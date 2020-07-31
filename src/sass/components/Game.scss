@@ -12,6 +12,7 @@
 
         .game-info-container {
             @include flex(column);
+            display: none;
 
             height: 90%;
             margin: 20px;
@@ -51,6 +52,10 @@
                     background-color: rgba($tertiary, .2)
                 }
             }
+        }
+
+        .display {
+            display: initial;
         }
 
         @include breakPoint(small-desktop-max) {

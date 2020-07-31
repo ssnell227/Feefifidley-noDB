@@ -30,6 +30,8 @@ const runGame = async (io, gameId) => {
 
     io.in(gameId).emit('nextRound')
 
+    console.log('game running')
+
     const getReadyTimer = new CronJob('*/1 * * * * *', () => {
         if (!getUsersInRoom(gameId)) {
             return getReadyTimer.stop()
