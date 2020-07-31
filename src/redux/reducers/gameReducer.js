@@ -2,7 +2,12 @@ import axios from 'axios'
 
 const initialState = {
     playlists: [],
-    currentPlaylist: {},
+    currentPlaylist: {
+        playlistName: null,
+            playlistId: null,
+            spotifyId: null,
+            playlistImg: null
+    },
     currentRoom: '',
     highScores: [],
     loading: false

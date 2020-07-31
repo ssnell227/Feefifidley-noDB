@@ -61,11 +61,6 @@ const runGame = async (io, gameId) => {
             
             const winner = calculateWinner(currentRoom.users)
             io.in(gameId).emit('gameOver', {winner})
-            try {
-                axios.put(`http://${LOCAL_HOST}:${SERVER_PORT}/api/game/updateGame`, { gameId, userList, songList, winner })
-            } catch (err) {
-                console.log(err)
-            }
             return 
 
         }  else if (currentRoom.counter <= 0) {
@@ -100,7 +95,7 @@ const getRoom = (gameId) => {
     return rooms.find(item => item.gameId === gameId)
 }
 
-const addRoom = async ({ username, gameId, playlistName, playlistId, spotifyId }, socketId, io) => {
+const addRoom = async ({ username, gameId, playlistName, playlistId, spotifyId, playlistImg }, socketId, io) => {
 
     const { data } = await axios.post(`http://${LOCAL_HOST}:${SERVER_PORT}/api/spotify/getPlaylistItems`, { spotifyId })
         .catch(err => console.log(err))
@@ -138,6 +133,7 @@ const addRoom = async ({ username, gameId, playlistName, playlistId, spotifyId }
         playlistName,
         playlistId,
         spotifyId,
+        playlistImg,
         gameObjs: getGameSongs(withPreview),
         playing: false,
         currentRound: 1,
@@ -160,7 +156,6 @@ const addUser = ({ gameId, username, socketId }, io) => {
 
     users.push({ username, socketId, score: [] })
 
-    console.log(currentRoom.gameObjs)
 
     io.in(gameId).emit('sendSongs', { currentSongObj: currentRoom.gameObjs })
 }

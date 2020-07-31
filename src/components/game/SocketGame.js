@@ -108,7 +108,7 @@ const SocketGame = (props) => {
                     <div className='game-info-container'>
                         <p className='timer'> {timerSeconds}</p>
                         <div>
-                            <audio autoPlay src={props.currentSongObj[round - 1].song.preview_url} />
+                            <audio autoPlay preload='auto' src={props.currentSongObj[round - 1].song.preview_url} />
                         </div>
                         <div className='game-songs-container'>
                             {songsMap}

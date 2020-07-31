@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 
 
 import crownIcon from '../../images/crown-icon.svg'
+import { setCurrentPlaylist } from '../../redux/reducers/gameReducer'
 
 
 let socket;
@@ -16,48 +17,61 @@ const Lobby = (props) => {
     const [gameOver, setGameOver] = useState(false)
     const [winner, setWinner] = useState('')
 
+    const { currentPlaylist } = props.game
+
     const startGame = () => {
         socket.emit('startGame')
     }
 
     useEffect(() => {
         const { currentRoom, currentPlaylist } = props.game
-
+        const { playlistName, playlistId, spotifyId, playlistImg } = currentPlaylist
         socket = io()
 
         socket.emit('join', {
             username: props.auth.username,
             gameId: currentRoom,
-            playlistName: currentPlaylist.playlistName,
-            playlistId: currentPlaylist.playlistId,
-            spotifyId: currentPlaylist.spotifyId
+            playlistName,
+            playlistId,
+            spotifyId,
+            playlistImg
         }, (err) => console.log(err))
 
-        socket.on('roomData', ({ users }) => {
+        socket.on('begin', () => {
+            setGameState('game')
+        })
+
+        socket.on('gameOver', ({ winner }) => {
+            setGameOver(true)
+            setWinner(winner)
+        })
+
+
+        return () => {
+            socket.emit('leaveRoom', { gameId: currentRoom, username: props.auth.username, socketId: socket.id })
+            socket.off()
+        }
+    }, [ props.game.currentRoom, props.auth.username])
+
+    useEffect(() => {
+
+        socket.on('roomData', ({ room }) => {
+            const { users, playlistName, playlistId, spotifyId, playlistImg } = room
             try {
                 const sortedUsers = users.map(user => {
                     const userScore = user.score.map(item => 1 + 1 / (item.date % 100000))
                     return { username: user.username, userScore }
                 }).sort((a, b) => b.userScore - a.userScore)
                 setUsers(sortedUsers)
+
+                if (!currentPlaylist.playlistName) {
+                    props.setCurrentPlaylist({ playlistName, playlistId, spotifyId, playlistImg })
+                }
             } catch {
                 setUsers(users)
             }
         })
-        socket.on('begin', () => {
-            setGameState('game')
-        })
-
-        socket.on('gameOver', ({winner}) => {
-            setGameOver(true)
-            setWinner(winner)
-        })
-
-        return () => {
-            socket.emit('leaveRoom', { gameId: currentRoom, username: props.auth.username, socketId: socket.id })
-            socket.off()
-        }
-    }, [props.game, props.auth.username])
+    }, [currentPlaylist, props.setCurrentPlaylist])
 
     useEffect(() => {
         let redirectTimer
@@ -115,15 +129,15 @@ const Lobby = (props) => {
                         </div>
                     </div>
                 </div>
-                    {gameState === 'lobby' &&
-                        <div className='game-start'>
-                            <button className='button' onClick={() => startGame()}>Start game</button>
-                            <h1>Game number: {props.game.currentRoom}</h1>
-                        </div>
-                    }
+                {gameState === 'lobby' &&
+                    <div className='game-start'>
+                        <button className='button' onClick={() => startGame()}>Start game</button>
+                        <h1>Game number: {props.game.currentRoom}</h1>
+                    </div>
+                }
                 {gameOver &&
                     <div className='game-over-container'>
-                        <img className='winner-icon-main' src={crownIcon} alt='winner symbol'/>
+                        <img className='winner-icon-main' src={crownIcon} alt='winner symbol' />
                         <p>{winner}</p>
                         <button className='button' onClick={() => props.history.push('/dashboard')} >Dashboard</button>
                     </div>
@@ -138,4 +152,4 @@ const Lobby = (props) => {
 
 const mapStateToProps = (reduxState) => reduxState
 
-export default connect(mapStateToProps)(Lobby)
+export default connect(mapStateToProps, { setCurrentPlaylist })(Lobby)

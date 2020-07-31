@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import { connect } from 'react-redux'
+import createHash from 'hash-generator'
 import { setCurrentPlaylist, setCurrentRoom, setPlaylists } from '../../redux/reducers/gameReducer'
 
 
@@ -17,19 +17,20 @@ const Dashboard = (props) => {
             spotifyId: spotifyid,
             playlistImg: img
         })
-        const game = await axios.post('/api/game/newGame', { userId: props.auth.userId, playlist: name, playlist_id: id })
-        const { game_id } = game.data
-        setCurrentRoom(game_id)
-        props.history.push(`/game/${game_id}`)
+        // const game = await axios.post('/api/game/newGame', { userId: props.auth.userId, playlist: name, playlist_id: id })
+        // const { game_id } = game.data
+        const gameHash = createHash(10)
+        setCurrentRoom(gameHash)
+        props.history.push(`/game/${gameHash}`)
     }
 
     const joinGame = async () => {
-        const { data } = await axios.get(`/api/game/joinGameInfo/${joinGameInput}`)
-        const { game_id, playlist_name, id, img_url } = data
+        // const { data } = await axios.get(`/api/game/joinGameInfo/${joinGameInput}`)
+        // const { game_id, playlist_name, id, img_url } = data
 
-        setCurrentRoom(game_id)
-        setCurrentPlaylist({ playlistName: playlist_name, playlistId: id, playlistImg: img_url })
-        props.history.push(`/game/${game_id}`)
+        setCurrentRoom(joinGameInput)
+        // setCurrentPlaylist({ playlistName: playlist_name, playlistId: id, playlistImg: img_url })
+        props.history.push(`/game/${joinGameInput}`)
     }
 
     useEffect(() => {
